@@ -3,7 +3,6 @@ package com.example.backend.domain.like;
 import java.time.LocalDateTime;
 
 import com.example.backend.domain.post.Post;
-import com.example.backend.domain.user.User;
 import com.example.backend.domain.user.Users;
 
 import jakarta.persistence.Entity;
@@ -35,7 +34,7 @@ public class Like {
     private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "recipe_id")
+    @JoinColumn(name = "post_id")
     private Post post;
 
     @Builder

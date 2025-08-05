@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.example.backend.domain.comment.Comment;
 import com.example.backend.domain.like.Like;
-import com.example.backend.domain.user.User;
 import com.example.backend.domain.user.Users;
 
 import jakarta.persistence.CascadeType;
@@ -31,17 +30,17 @@ public class Post {
     private Long id;
 
     private String title;
-    private String description;
+    private String description; 
  
     // 연관관계
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Users user;
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Like> likes = new ArrayList<>();
 
     

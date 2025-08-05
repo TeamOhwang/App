@@ -1,6 +1,5 @@
 package com.example.backend.domain.chat;
 
-import com.example.backend.domain.user.User;
 import com.example.backend.domain.user.Users;
 
 import jakarta.persistence.Entity;
