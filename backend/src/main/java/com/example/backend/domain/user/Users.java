@@ -23,10 +23,10 @@ import lombok.NoArgsConstructor;
 
 
 @Entity
-@Table(name = "user")
+@Table(name = "users")
 @Getter
 @NoArgsConstructor
-public class User {
+public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -52,7 +52,7 @@ public class User {
     private List<ChatMessage> messages = new ArrayList<>();
 
     @Builder
-    public User(String email, String nickname, String password, String profileImage, String provider) {
+    public Users(String email, String nickname, String password, String profileImage, String provider) {
         this.email = email;
         this.nickname = nickname;
         this.password = password;
