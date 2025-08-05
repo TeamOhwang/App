@@ -20,7 +20,7 @@
 
 
         <activity
-            android:name=".MainActivity"
+            android:name=".LoginActivity"
             android:exported="true">
 
             <!-- 앱 시작점 -->
