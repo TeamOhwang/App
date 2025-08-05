@@ -1,6 +1,8 @@
 package com.example.backend.domain.chat;
 
 import com.example.backend.domain.user.User;
+import com.example.backend.domain.user.Users;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -29,10 +31,10 @@ public class ChatMessage {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User sender;
+    private Users sender;
 
     @Builder
-    public ChatMessage(String message, ChatRoom chatRoom, User sender) {
+    public ChatMessage(String message, ChatRoom chatRoom, Users sender) {
         this.message = message;
         this.chatRoom = chatRoom;
         this.sender = sender;

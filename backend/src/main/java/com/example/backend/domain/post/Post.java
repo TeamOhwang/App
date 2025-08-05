@@ -6,6 +6,7 @@ import java.util.List;
 import com.example.backend.domain.comment.Comment;
 import com.example.backend.domain.like.Like;
 import com.example.backend.domain.user.User;
+import com.example.backend.domain.user.Users;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -35,7 +36,7 @@ public class Post {
     // 연관관계
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users user;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
@@ -45,7 +46,7 @@ public class Post {
 
     
     @Builder
-    public Post(String title, String description, User user) {
+    public Post(String title, String description, Users user) {
         this.title = title;
         this.description = description;
         this.user = user;

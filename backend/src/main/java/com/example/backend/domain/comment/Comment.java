@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.example.backend.domain.post.Post;
 import com.example.backend.domain.user.User;
+import com.example.backend.domain.user.Users;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -35,7 +36,7 @@ public class Comment {
     // 작성자
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users user;
 
     // 어떤 게시글의 댓글인지
     @ManyToOne(fetch = FetchType.LAZY)
@@ -51,7 +52,7 @@ public class Comment {
     private List<Comment> children = new ArrayList<>();
 
     @Builder
-    public Comment(String content, User user, Post post, Comment parent) {
+    public Comment(String content, Users user, Post post, Comment parent) {
         this.content = content;
         this.user = user;
         this.post = post;

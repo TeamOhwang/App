@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MypageService {
     private final UserRepository userRepository;
-    private final PostRepository postRepository;
+    private final postRepository postRepository;
 
 
 

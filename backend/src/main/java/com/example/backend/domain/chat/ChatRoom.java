@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.backend.domain.user.User;
+import com.example.backend.domain.user.Users;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -33,12 +34,12 @@ public class ChatRoom {
     // 유저1 (채팅 상대 A)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user1_id")
-    private User user1;
+    private Users user1;
 
     // 유저2 (채팅 상대 B)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user2_id")
-    private User user2;
+    private Users user2;
 
     private String name; // Optional - ex: 유저1-유저2
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -47,7 +48,7 @@ public class ChatRoom {
     private List<ChatMessage> messages = new ArrayList<>();
 
     @Builder
-    public ChatRoom(User user1, User user2, String name) {
+    public ChatRoom(Users user1, Users user2, String name) {
         this.user1 = user1;
         this.user2 = user2;
         this.name = name;
