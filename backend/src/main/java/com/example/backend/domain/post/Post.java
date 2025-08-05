@@ -1,5 +1,6 @@
 package com.example.backend.domain.post;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,11 +17,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(name = "posts")
 @Getter
 @NoArgsConstructor
 public class Post {
@@ -30,7 +33,8 @@ public class Post {
     private Long id;
 
     private String title;
-    private String description; 
+    private String content;
+    private LocalDateTime createdAt = LocalDateTime.now();
  
     // 연관관계
     @ManyToOne(fetch = FetchType.LAZY)
@@ -45,14 +49,39 @@ public class Post {
 
     
     @Builder
-    public Post(String title, String description, Users user) {
+    public Post(String title, String content, Users user) {
         this.title = title;
-        this.description = description;
+        this.content = content;
         this.user = user;
     }
 
-    public void update(String title, String description) {
+    public void update(String title, String content) {
         this.title = title;
-        this.description = description;
+        this.content = content;
+    }
+    
+    // Getter 메서드들 (Lombok @Getter가 있지만 호환성을 위해 추가)
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    public void setTitle(String title) {
+        this.title = title;
+    }
+    
+    public void setContent(String content) {
+        this.content = content;
+    }
+    
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+    
+    public Users getUser() {
+        return user;
+    }
+    
+    public void setUser(Users user) {
+        this.user = user;
     }
 }

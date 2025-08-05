@@ -19,8 +19,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-
-
 @Entity
 @Table(name = "users")
 @Getter
@@ -32,9 +30,8 @@ public class Users {
     private String account_code;
     private String email;
     private String nickname;
-    private String profileImage;  // 프로필 이미지 URL
-    
-    
+    private String profileImage; // 프로필 이미지 URL
+
     // 연관 관계
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();

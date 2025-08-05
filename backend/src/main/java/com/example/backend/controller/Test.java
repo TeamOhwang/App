@@ -1,5 +1,5 @@
-// package com.example.backend.controller;
+package com.example.backend.controller;
 
-// public class Test {
+public class Test {
 
-// }
+}

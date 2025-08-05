@@ -1,48 +1,48 @@
-// package com.example.backend.entity;
+package com.example.backend.entity;
 
-// import jakarta.persistence.*;
+import jakarta.persistence.*;
 
-// @Entity
-// @Table(name = "test")
-// public class Test {
+@Entity
+@Table(name = "test")
+public class Test {
     
-//     @Id
-//     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//     private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     
-//     @Column(name = "message")
-//     private String message;
+    @Column(name = "message")
+    private String message;
     
-//     // 기본 생성자
-//     public Test() {}
+    // 기본 생성자
+    public Test() {}
     
-//     // 생성자
-//     public Test(String message) {
-//         this.message = message;
-//     }
+    // 생성자
+    public Test(String message) {
+        this.message = message;
+    }
     
-//     // Getter, Setter
-//     public Long getId() {
-//         return id;
-//     }
+    // Getter, Setter
+    public Long getId() {
+        return id;
+    }
     
-//     public void setId(Long id) {
-//         this.id = id;
-//     }
+    public void setId(Long id) {
+        this.id = id;
+    }
     
-//     public String getMessage() {
-//         return message;
-//     }
+    public String getMessage() {
+        return message;
+    }
     
-//     public void setMessage(String message) {
-//         this.message = message;
-//     }
+    public void setMessage(String message) {
+        this.message = message;
+    }
     
-//     @Override
-//     public String toString() {
-//         return "Test{" +
-//                 "id=" + id +
-//                 ", message='" + message + '\'' +
-//                 '}';
-//     }
-// }
+    @Override
+    public String toString() {
+        return "Test{" +
+                "id=" + id +
+                ", message='" + message + '\'' +
+                '}';
+    }
+}
