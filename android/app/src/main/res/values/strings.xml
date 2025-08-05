@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Project</string>
+    
+    <!-- 서버 설정 -->
+    <string name="server_port">8081</string>
+    
+    <!-- 개발자 가이드:
+         - 에뮬레이터 사용시: 자동으로 10.0.2.2 사용
+         - 실제 기기 사용시: 컴퓨터와 같은 WiFi에 연결 후 컴퓨터 IP로 변경 필요
+         - 예: <string name="server_ip">192.168.1.100</string>
+    -->
+    <string name="server_ip">auto</string>
 </resources>

@@ -1,47 +1,273 @@
 package com.example.project
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.project.ui.theme.ProjectTheme
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+    private lateinit var messageTextView: TextView
+    private lateinit var fetchButton: Button
+    private lateinit var dbTestButton: Button
+    private lateinit var createUserButton: Button
+    private lateinit var showTestMessagesButton: Button
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            ProjectTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+        setContentView(R.layout.activity_main)
+        
+        messageTextView = findViewById(R.id.messageTextView)
+        fetchButton = findViewById(R.id.fetchButton)
+        dbTestButton = findViewById(R.id.dbTestButton)
+        createUserButton = findViewById(R.id.createUserButton)
+        showTestMessagesButton = findViewById(R.id.showTestMessagesButton)
+        
+        fetchButton.setOnClickListener {
+            fetchMessageFromServer()
+        }
+        
+        dbTestButton.setOnClickListener {
+            testDatabaseConnection()
+        }
+        
+        createUserButton.setOnClickListener {
+            createTestUser()
+        }
+        
+        showTestMessagesButton.setOnClickListener {
+            showTestMessages()
+        }
+    }
+    
+    private fun fetchMessageFromServer() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val port = getString(R.string.server_port)
+            val serverIp = getString(R.string.server_ip)
+            
+            // URL 목록 생성
+            val urls = mutableListOf<String>()
+            
+            if (serverIp == "auto") {
+                // 자동 모드: 에뮬레이터와 실제 기기 모두 시도
+                urls.add("http://10.0.2.2:$port/api/message")  // 에뮬레이터용
+                urls.add("http://127.0.0.1:$port/api/message")  // 실제 기기용
+            } else {
+                // 수동 설정된 IP 사용
+                urls.add("http://$serverIp:$port/api/message")
+            }
+            
+            var success = false
+            var lastError = ""
+            
+            withContext(Dispatchers.Main) {
+                messageTextView.text = "서버 연결 중..."
+            }
+            
+            for (urlString in urls) {
+                try {
+                    val url = URL(urlString)
+                    val connection = url.openConnection() as HttpURLConnection
+                    connection.requestMethod = "GET"
+                    connection.connectTimeout = 5000
+                    connection.readTimeout = 5000
+                    
+                    val responseCode = connection.responseCode
+                    if (responseCode == HttpURLConnection.HTTP_OK) {
+                        val reader = BufferedReader(InputStreamReader(connection.inputStream))
+                        val response = reader.readText()
+                        reader.close()
+                        
+                        val jsonObject = JSONObject(response)
+                        val message = jsonObject.getString("message")
+                        
+                        withContext(Dispatchers.Main) {
+                            messageTextView.text = message
+                        }
+                        success = true
+                        connection.disconnect()
+                        break
+                    } else {
+                        lastError = "HTTP $responseCode"
+                    }
+                    connection.disconnect()
+                } catch (e: Exception) {
+                    lastError = e.message ?: "알 수 없는 오류"
+                }
+            }
+            
+            if (!success) {
+                withContext(Dispatchers.Main) {
+                    messageTextView.text = """
+                        연결 실패: $lastError
+                        
+                        확인사항:
+                        1. 백엔드 서버가 $port 포트에서 실행 중인가요?
+                        2. 실제 기기 사용시 컴퓨터와 같은 WiFi에 연결되어 있나요?
+                        
+                        실제 기기 사용시 strings.xml에서 
+                        server_ip를 컴퓨터 IP로 변경하세요.
+                    """.trimIndent()
                 }
             }
         }
     }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ProjectTheme {
-        Greeting("Android")
+    
+    private fun testDatabaseConnection() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val port = getString(R.string.server_port)
+            val serverIp = getString(R.string.server_ip)
+            
+            val baseUrl = if (serverIp == "auto") {
+                "http://10.0.2.2:$port"
+            } else {
+                "http://$serverIp:$port"
+            }
+            
+            try {
+                withContext(Dispatchers.Main) {
+                    messageTextView.text = "DB 연결 테스트 중..."
+                }
+                
+                val url = URL("$baseUrl/api/users/test")
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.connectTimeout = 5000
+                connection.readTimeout = 5000
+                
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val reader = BufferedReader(InputStreamReader(connection.inputStream))
+                    val response = reader.readText()
+                    reader.close()
+                    
+                    withContext(Dispatchers.Main) {
+                        messageTextView.text = "✅ $response"
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        messageTextView.text = "❌ DB 테스트 실패: HTTP $responseCode"
+                    }
+                }
+                connection.disconnect()
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    messageTextView.text = "❌ DB 테스트 오류: ${e.message}"
+                }
+            }
+        }
+    }
+    
+    private fun createTestUser() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val port = getString(R.string.server_port)
+            val serverIp = getString(R.string.server_ip)
+            
+            val baseUrl = if (serverIp == "auto") {
+                "http://10.0.2.2:$port"
+            } else {
+                "http://$serverIp:$port"
+            }
+            
+            try {
+                withContext(Dispatchers.Main) {
+                    messageTextView.text = "테스트 사용자 생성 중..."
+                }
+                
+                val url = URL("$baseUrl/api/users/test")
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "POST"
+                connection.connectTimeout = 5000
+                connection.readTimeout = 5000
+                
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val reader = BufferedReader(InputStreamReader(connection.inputStream))
+                    val response = reader.readText()
+                    reader.close()
+                    
+                    withContext(Dispatchers.Main) {
+                        messageTextView.text = "✅ $response"
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        messageTextView.text = "❌ 사용자 생성 실패: HTTP $responseCode"
+                    }
+                }
+                connection.disconnect()
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    messageTextView.text = "❌ 사용자 생성 오류: ${e.message}"
+                }
+            }
+        }
+    }
+    
+    private fun showTestMessages() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val port = getString(R.string.server_port)
+            val serverIp = getString(R.string.server_ip)
+            
+            val baseUrl = if (serverIp == "auto") {
+                "http://10.0.2.2:$port"
+            } else {
+                "http://$serverIp:$port"
+            }
+            
+            try {
+                withContext(Dispatchers.Main) {
+                    messageTextView.text = "Test 테이블 메시지 가져오는 중..."
+                }
+                
+                val url = URL("$baseUrl/api/test/messages")
+                val connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "GET"
+                connection.connectTimeout = 5000
+                connection.readTimeout = 5000
+                
+                val responseCode = connection.responseCode
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    val reader = BufferedReader(InputStreamReader(connection.inputStream))
+                    val response = reader.readText()
+                    reader.close()
+                    
+                    // JSON 배열 파싱
+                    val jsonArray = org.json.JSONArray(response)
+                    val messages = mutableListOf<String>()
+                    
+                    for (i in 0 until jsonArray.length()) {
+                        val jsonObject = jsonArray.getJSONObject(i)
+                        val id = jsonObject.getLong("id")
+                        val message = jsonObject.getString("message")
+                        messages.add("ID: $id - $message")
+                    }
+                    
+                    withContext(Dispatchers.Main) {
+                        if (messages.isNotEmpty()) {
+                            messageTextView.text = "📋 Test 테이블 메시지들:\n\n" + messages.joinToString("\n\n")
+                        } else {
+                            messageTextView.text = "Test 테이블에 메시지가 없습니다."
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        messageTextView.text = "❌ 메시지 조회 실패: HTTP $responseCode"
+                    }
+                }
+                connection.disconnect()
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    messageTextView.text = "❌ 메시지 조회 오류: ${e.message}"
+                }
+            }
+        }
     }
 }
