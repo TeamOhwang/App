@@ -18,7 +18,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var messageTextView: TextView
     private lateinit var fetchButton: Button
     private lateinit var dbTestButton: Button
-    private lateinit var createUserButton: Button
     private lateinit var showTestMessagesButton: Button
     
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +27,6 @@ class MainActivity : AppCompatActivity() {
         messageTextView = findViewById(R.id.messageTextView)
         fetchButton = findViewById(R.id.fetchButton)
         dbTestButton = findViewById(R.id.dbTestButton)
-        createUserButton = findViewById(R.id.createUserButton)
         showTestMessagesButton = findViewById(R.id.showTestMessagesButton)
         
         fetchButton.setOnClickListener {
@@ -37,10 +35,6 @@ class MainActivity : AppCompatActivity() {
         
         dbTestButton.setOnClickListener {
             testDatabaseConnection()
-        }
-        
-        createUserButton.setOnClickListener {
-            createTestUser()
         }
         
         showTestMessagesButton.setOnClickListener {
@@ -166,50 +160,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
-    private fun createTestUser() {
-        CoroutineScope(Dispatchers.IO).launch {
-            val port = getString(R.string.server_port)
-            val serverIp = getString(R.string.server_ip)
-            
-            val baseUrl = if (serverIp == "auto") {
-                "http://10.0.2.2:$port"
-            } else {
-                "http://$serverIp:$port"
-            }
-            
-            try {
-                withContext(Dispatchers.Main) {
-                    messageTextView.text = "테스트 사용자 생성 중..."
-                }
-                
-                val url = URL("$baseUrl/api/users/test")
-                val connection = url.openConnection() as HttpURLConnection
-                connection.requestMethod = "POST"
-                connection.connectTimeout = 5000
-                connection.readTimeout = 5000
-                
-                val responseCode = connection.responseCode
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    val reader = BufferedReader(InputStreamReader(connection.inputStream))
-                    val response = reader.readText()
-                    reader.close()
-                    
-                    withContext(Dispatchers.Main) {
-                        messageTextView.text = "✅ $response"
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        messageTextView.text = "❌ 사용자 생성 실패: HTTP $responseCode"
-                    }
-                }
-                connection.disconnect()
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    messageTextView.text = "❌ 사용자 생성 오류: ${e.message}"
-                }
-            }
-        }
-    }
+
     
     private fun showTestMessages() {
         CoroutineScope(Dispatchers.IO).launch {
