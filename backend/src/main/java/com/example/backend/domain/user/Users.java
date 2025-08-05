@@ -29,34 +29,30 @@ public class Users {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private String account_code;
     private String email;
     private String nickname;
-    private String password;
     private String profileImage;  // 프로필 이미지 URL
-    private String provider;      // 소셜 로그인 제공자 (예: "google", "kakao" 등)
     
     
     // 연관 관계
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Like> likes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     private List<ChatMessage> messages = new ArrayList<>();
 
     @Builder
-    public Users(String email, String nickname, String password, String profileImage, String provider) {
+    public Users(String email, String nickname, String profileImage) {
         this.email = email;
         this.nickname = nickname;
-        this.password = password;
         this.profileImage = profileImage;
-        this.provider = provider;
     }
 
     // 사용자 정보 수정 메소드

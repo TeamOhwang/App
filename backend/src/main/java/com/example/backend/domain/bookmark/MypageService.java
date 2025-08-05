@@ -3,9 +3,13 @@ package com.example.backend.domain.bookmark;
 import java.util.List;
 import org.springframework.stereotype.Service;
 
+import com.example.backend.domain.bookmark.DTO.PostWithLikeCountDto;
 import com.example.backend.domain.like.LikeRepository;
 import com.example.backend.domain.post.Post;
+import com.example.backend.domain.post.PostRepository;
 import com.example.backend.domain.user.Users;
+import com.example.backend.repository.UserRepository;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -34,32 +38,30 @@ public void updateMypage(Long userId, String nickname) {
 }
 
 
-@Transactional //내 게시글 불러오기
-public List<Post> myPostsLoad(Long userId) {
-    Users user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("User not found"));
-    return postRepository.findByUser_Id(userId); 
-}
-
-
-
-@Transactional //좋아요한 게시글 불러오기
+@Transactional // 좋아요한 게시글 불러오기
 public List<Post> getLikedPosts(Long userId) {
     return likeRepository.findLikedPostsByUserId(userId);
 }
 
+@Transactional // 내 게시글과 좋아요 수 불러오기
+public List<PostWithLikeCountDto> myPostsWithLikeCount(Long userId) {
+    List<Post> posts = postRepository.findByUser_Id(userId);
 
-
-
-
+    return posts.stream()
+        .map(post -> new PostWithLikeCountDto(
+            post.getId(),
+            post.getTitle(),
+            post.getDescription(),
+            (long) post.getLikes().size()
+        ))
+        .toList();
+}
 
 
 
 
 
 }           
-
-
 
 
     

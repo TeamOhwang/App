@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.domain.bookmark.DTO.PostWithLikeCountDto;
 import com.example.backend.domain.bookmark.DTO.UserProfileDto;
 import com.example.backend.domain.post.Post;
 import com.example.backend.domain.user.Users;
@@ -34,17 +35,19 @@ public ResponseEntity<Void> updateNickname( @RequestParam String nickname, @Requ
     return ResponseEntity.ok().build();
 }
 
-@GetMapping("/mypage/posts/{userId}") // 내 게시글 불러오기 
-public ResponseEntity<List<Post>> getMyPosts(@PathVariable Long userId) {
-    return ResponseEntity.ok(mypageService.myPostsLoad(userId));
-}
 
+@GetMapping("/mypage/posts-with-likes/{userId}") // 내 게시글과 좋아요 수 불러오기
+public ResponseEntity<List<PostWithLikeCountDto>> getMyPostsWithLikeCount(@PathVariable Long userId) {
+    return ResponseEntity.ok(mypageService.myPostsWithLikeCount(userId));
+}
 
 
 @GetMapping("/mypage/likes/{userId}") // 좋아요한 게시글 불러오기
 public ResponseEntity<List<Post>> getLikedPosts(@PathVariable Long userId) {
     return ResponseEntity.ok(mypageService.getLikedPosts(userId));
 }
+
+
 
 }
 
