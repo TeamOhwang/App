@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "306297163726",
+    "project_id": "hackerthon-ad900",
+    "storage_bucket": "hackerthon-ad900.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:306297163726:android:755902b79153d6c389a59f",
+        "android_client_info": {
+          "package_name": "com.example.hackathon"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "306297163726-80997k3b17klatc2dfdh2ahjsshdae47.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.hackathon",
+            "certificate_hash": "2f8a82ec56459e91fb2d06ef0421c88f80cd8f34"
+          }
+        },
+        {
+          "client_id": "306297163726-5a9mba5fm6m55nb60ks56r355m8nqi9m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7eAu0hpU7j2r_6pUL08deKjOkP7b8SIc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "306297163726-5a9mba5fm6m55nb60ks56r355m8nqi9m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
