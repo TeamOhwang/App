@@ -6,6 +6,8 @@ import java.util.List;
 
 import com.example.backend.domain.post.Post;
 import com.example.backend.entity.Users;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -35,19 +37,23 @@ public class Comment {
     // 작성자
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private Users user;
 
     // 어떤 게시글의 댓글인지
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
+    @JsonBackReference
     private Post post;
 
     // 대댓글(자기참조)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
+    @JsonBackReference
     private Comment parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Comment> children = new ArrayList<>();
 
     @Builder
