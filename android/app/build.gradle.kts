@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.hackathon"
+    namespace = "com.example.project"  // 🔥 다시 project로 변경
     compileSdk = 36
 
     // 🔑 서명 설정 (팀 공용 키스토어)
@@ -25,7 +25,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.hackathon"
+        applicationId = "com.example.project"  // 🔥 다시 project로 변경
         minSdk = 29
         targetSdk = 36
         versionCode = 1

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.hackathon.util.SessionManager
 import com.example.project.R
 
+
 class LogoutActivity : AppCompatActivity() {
 
     private lateinit var sessionManager: SessionManager
