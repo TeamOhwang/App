@@ -5,9 +5,10 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.entity.Users;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -16,17 +17,27 @@ import lombok.RequiredArgsConstructor;
 public class LikeController {
         private final LikeService likeService;
 
-    //좋아요누르기
+       // 좋아요 누르기
     @PostMapping("/{postId}")
-    public ResponseEntity<Void> like(@PathVariable Long postId, @RequestParam Long userId) {
-        likeService.like(postId, userId);
+    public ResponseEntity<Void> like(@PathVariable Long postId, HttpSession session) {
+        Users user = (Users) session.getAttribute("loginUser");
+        if (user == null) {
+            return ResponseEntity.status(401).build(); // 로그인 안 했을 때 401 반환
+        }
+
+        likeService.like(postId, user);
         return ResponseEntity.ok().build();
     }
-    
-    //좋아요취소
+
+    // 좋아요 취소
     @DeleteMapping("/{postId}")
-    public ResponseEntity<Void> unlike(@PathVariable Long postId, @RequestParam Long userId) {
-        likeService.unlike(postId, userId);
+    public ResponseEntity<Void> unlike(@PathVariable Long postId, HttpSession session) {
+        Users user = (Users) session.getAttribute("loginUser");
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        likeService.unlike(postId, user);
         return ResponseEntity.ok().build();
     }
 

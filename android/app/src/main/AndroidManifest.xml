@@ -18,15 +18,16 @@
             android:name=".MyPage"
             android:exported="false" />
         <activity
-            android:name="com.example.hackathon.LogoutActivity"
+            android:name="com.example.project.LogoutActivity"
+            android:exported="false" />
+
+        <activity
+            android:name="com.example.project.LoginActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.hackathon.LoginActivity"
-            android:exported="false" /> <!-- android:name="com.example.hackathon.LoginActivity" -->
-        <!-- android:name="com.example.project.MainActivity" -->
-        <activity
-            android:name=".MainActivity"
+            android:name="com.example.project.MainActivity"
             android:exported="true">
+
 
             <!-- 앱 시작점 -->
             <intent-filter>
@@ -36,7 +37,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LiveTalkActivity"
+            android:name="com.example.project.LiveTalkActivity"
             android:exported="false" />
     </application>
 

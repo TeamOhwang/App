@@ -1,4 +1,4 @@
-package com.example.hackathon
+package com.example.project
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,8 +8,8 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.example.hackathon.util.SessionManager
-import com.example.project.R
+import com.example.project.util.SessionManager
+
 
 class LogoutActivity : AppCompatActivity() {
 

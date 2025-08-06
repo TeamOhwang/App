@@ -2,13 +2,27 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.gms.google-services") // 임시 비활성화
+    id("com.google.gms.google-services")
 }
 
-
 android {
-    namespace = "com.example.project"
+    namespace = "com.example.project"  // 🔥 다시 project로 변경
     compileSdk = 36
+
+    // 🔑 서명 설정 (팀 공용 키스토어)
+    signingConfigs {
+        getByName("debug") {
+            val keystoreFile = file("team-debug.keystore")
+            if (keystoreFile.exists()) {
+                storeFile = keystoreFile
+                storePassword = "android"
+                keyAlias = "androiddebugkey"
+                keyPassword = "android"
+            } else {
+                println("⚠️ 키스토어 파일을 찾을 수 없습니다: ${keystoreFile.absolutePath}")
+            }
+        }
+    }
 
     defaultConfig {
         applicationId = "com.example.project"
@@ -21,7 +35,11 @@ android {
     }
 
     buildTypes {
-        release {
+        getByName("debug") {
+            isDebuggable = true
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -29,21 +47,23 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
-
 }
 
 dependencies {
-
+    // Android 기본
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -59,8 +79,17 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.fragment.ktx)
-    implementation(libs.androidx.gridlayout)
-    implementation(libs.androidx.recyclerview)
+
+    // 🔥 Firebase & Google Sign-In
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.android.gms:play-services-auth:21.1.1")
+
+    // 🌐 네트워크 통신
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    // 테스트 의존성
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -68,14 +97,4 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    // ✅ Firebase & Google Sign-In (임시 비활성화)
-    implementation("com.google.firebase:firebase-auth:23.0.0")
-    implementation("com.google.android.gms:play-services-auth:21.1.1")
-
-    // (선택) 네트워크 통신 - MySQL 서버 연동 시
-    implementation("com.squareup.okhttp3:okhttp:4.12.0")
-    
-    // JSON 파싱을 위한 Gson
-    implementation("com.google.code.gson:gson:2.10.1")
-
 }

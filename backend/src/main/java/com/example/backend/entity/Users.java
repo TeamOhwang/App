@@ -3,7 +3,6 @@ package com.example.backend.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.backend.domain.chat.ChatMessage;
 import com.example.backend.domain.comment.Comment;
 import com.example.backend.domain.like.Like;
 import com.example.backend.domain.post.Post;
@@ -11,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -34,19 +34,19 @@ public class Users {
     private String profileImage; // 프로필 이미지 URL
 
     // 연관 관계
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference("user-posts")
     private List<Post> posts = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference("user-comments")
     private List<Comment> comments = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonManagedReference("user-likes")
     private List<Like> likes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
-    private List<ChatMessage> messages = new ArrayList<>();
-
+     
     @Builder
     public Users(String account_code, String email, String nickname, String profileImage) {
         this.account_code = account_code;

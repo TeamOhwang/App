@@ -6,16 +6,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.backend.domain.bookmark.DTO.PostWithLikeCountDto;
 import com.example.backend.domain.bookmark.DTO.UserProfileDto;
+import com.example.backend.domain.bookmark.DTO.UserProfileUpdateDto;
 import com.example.backend.domain.post.Post;
 import com.example.backend.entity.Users;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -24,42 +25,56 @@ import lombok.RequiredArgsConstructor;
 public class MypageController {
         private final MypageService mypageService;
 
-@GetMapping("/mypage/{userId}")//내 프로필 불러오기
-public ResponseEntity<UserProfileDto> getMyProfile(@PathVariable Long userId) {
-    Users user = mypageService.getMyProfileEntity(userId);
-    return ResponseEntity.ok(new UserProfileDto(user));
+// 내 프로필 불러오기
+@GetMapping("/mypage")
+public ResponseEntity<UserProfileDto> getMyProfile(HttpSession session) {
+    Users user = (Users) session.getAttribute("loginUser");
+    if (user == null) return ResponseEntity.status(401).build();
+
+    Users foundUser = mypageService.getMyProfileEntity(user.getId()); 
+    return ResponseEntity.ok(new UserProfileDto(foundUser));
 }
 
-@PatchMapping("/mypage/nickname")//닉네임 수정
-public ResponseEntity<Void> updateNickname( @RequestParam String nickname, @RequestParam Long userId) {
-    mypageService.updateMypage(userId, nickname);
+// 닉네임 , 프로필 이미지 수정
+@PatchMapping("/mypage/profile")
+public ResponseEntity<Void> updateProfile(@RequestBody UserProfileUpdateDto dto, HttpSession session) {
+    Users user = (Users) session.getAttribute("loginUser");
+    if (user == null) return ResponseEntity.status(401).build();
+
+    mypageService.updateProfile(user.getId(), dto);
     return ResponseEntity.ok().build();
 }
 
 
-@GetMapping("/mypage/posts-with-likes/{userId}") // 내 게시글과 좋아요 수 불러오기
-public ResponseEntity<List<PostWithLikeCountDto>> getMyPostsWithLikeCount(@PathVariable Long userId) {
-    return ResponseEntity.ok(mypageService.myPostsWithLikeCount(userId));
+// 좋아요한 게시글 불러오기
+@GetMapping("/mypage/likes")
+public ResponseEntity<List<Post>> getLikedPosts(HttpSession session) {
+    Users user = (Users) session.getAttribute("loginUser");
+    if (user == null) return ResponseEntity.status(401).build();
+
+    return ResponseEntity.ok(mypageService.getLikedPosts(user.getId()));
 }
 
+// 내 게시글과 좋아요 수 불러오기
+@GetMapping("/mypage/posts-with-likes")
+public ResponseEntity<List<PostWithLikeCountDto>> getMyPostsWithLikeCount(HttpSession session) {
+    Users user = (Users) session.getAttribute("loginUser");
+    if (user == null) return ResponseEntity.status(401).build();
 
-@GetMapping("/mypage/likes/{userId}") // 좋아요한 게시글 불러오기
-public ResponseEntity<List<Post>> getLikedPosts(@PathVariable Long userId) {
-    return ResponseEntity.ok(mypageService.getLikedPosts(userId));
+    return ResponseEntity.ok(mypageService.myPostsWithLikeCount(user.getId()));
 }
 
+// 회원 탈퇴
+@DeleteMapping("/mypage/withdraw")
+public ResponseEntity<String> withdrawUser(HttpSession session) {
+    Users user = (Users) session.getAttribute("loginUser");
+    if (user == null) return ResponseEntity.status(401).build();
 
-@DeleteMapping("/mypage/withdraw/{userId}")
-public ResponseEntity<String> withdrawUser(@PathVariable Long userId) {
-    mypageService.deleteUser(userId); 
-    return ResponseEntity.ok("회원 탈퇴가 완료되었습니다."); 
+    mypageService.deleteUser(user.getId());
+    session.invalidate(); // 로그아웃 처리
+    return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
 }
 
-
-@GetMapping("/mypage/withdraw-test/{userId}")
-public ResponseEntity<String> withdrawTest(@PathVariable Long userId) {
-    return ResponseEntity.ok("받음: " + userId);
-}
 
 }
 

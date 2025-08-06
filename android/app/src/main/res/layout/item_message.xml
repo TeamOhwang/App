@@ -3,31 +3,93 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp"
-    android:background="?android:attr/selectableItemBackground">
+    android:padding="8dp">
 
-    <TextView
-        android:id="@+id/sender_text_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textSize="14sp"
-        android:textColor="@android:color/black" />
-
-    <TextView
-        android:id="@+id/content_text_view"
+    <!-- 내가 보낸 메시지 (오른쪽 정렬) -->
+    <LinearLayout
+        android:id="@+id/my_message_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textSize="16sp"
-        android:textColor="@android:color/black" />
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:visibility="gone">
 
-    <TextView
-        android:id="@+id/timestamp_text_view"
-        android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/my_timestamp_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:textColor="#999999"
+            android:layout_gravity="bottom"
+            android:layout_marginEnd="8dp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/my_message_background"
+            android:padding="12dp"
+            android:layout_marginStart="60dp"
+            android:maxWidth="250dp">
+
+            <TextView
+                android:id="@+id/my_content_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:lineSpacingExtra="2dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- 상대방이 보낸 메시지 (왼쪽 정렬) -->
+    <LinearLayout
+        android:id="@+id/other_message_layout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textSize="12sp"
-        android:textColor="@android:color/darker_gray" />
+        android:orientation="horizontal"
+        android:gravity="start"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/other_message_background"
+            android:padding="12dp"
+            android:layout_marginEnd="60dp"
+            android:maxWidth="250dp">
+
+            <TextView
+                android:id="@+id/sender_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:textColor="#666666"
+                android:layout_marginBottom="4dp" />
+
+            <TextView
+                android:id="@+id/content_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="#333333"
+                android:lineSpacingExtra="2dp" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/timestamp_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:textColor="#999999"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="8dp" />
+
+    </LinearLayout>
 
 </LinearLayout>
