@@ -8,6 +8,7 @@ import com.example.backend.domain.comment.Comment;
 import com.example.backend.domain.like.Like;
 import com.example.backend.entity.Users;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -22,10 +23,12 @@ import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "posts")
 @Getter
+@Setter
 @NoArgsConstructor
 public class Post {
 
@@ -34,8 +37,9 @@ public class Post {
     private Long id;
 
     private String content;
+    private String imgUrl;
     private LocalDateTime createdAt = LocalDateTime.now();
- 
+
     // 연관관계
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -43,9 +47,11 @@ public class Post {
     private Users user;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Like> likes = new ArrayList<>();
 
     

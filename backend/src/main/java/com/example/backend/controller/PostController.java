@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.domain.post.DTO.PostUpdateRequest;
 import com.example.backend.domain.post.Post;
 import com.example.backend.domain.post.PostService;
 
@@ -62,11 +63,12 @@ public class PostController {
 
     // 본인 게시글 수정
     @PutMapping("/{postId}")
-    public ResponseEntity<?> updatePost(@PathVariable Long postId, @RequestBody Post requestPost, HttpSession session) {
+    public ResponseEntity<?> updatePost(@PathVariable Long postId, @RequestBody PostUpdateRequest requestPost, HttpSession session) {
         // 로그인한 사용자 ID
         Long userId = (Long) session.getAttribute("userId");
+        // Long userId = 1L;
 
-        postService.updatePost(postId, requestPost, userId);
+        postService.updatePost(postId, requestPost.getContent(), userId);
 
         return ResponseEntity.ok("게시글이 수정되었습니다");
     }
@@ -75,6 +77,7 @@ public class PostController {
     @DeleteMapping("/{postId}")
     public ResponseEntity<?> deletePost(@PathVariable Long postId, HttpSession session) {
         Long userId = (Long) session.getAttribute("userId");
+        // Long userId = 2L; //테스트용
 
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다");
