@@ -3,7 +3,6 @@ package com.example.backend.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.backend.domain.chat.ChatMessage;
 import com.example.backend.domain.comment.Comment;
 import com.example.backend.domain.like.Like;
 import com.example.backend.domain.post.Post;
@@ -48,10 +47,10 @@ public class Users {
     @JsonManagedReference("user-likes")
     private List<Like> likes = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
-//    @JsonIgnore
-//    private List<ChatMessage> messages = new ArrayList<>();
 
+    // @JsonIgnore
+    // private Lis
+     
     @Builder
     public Users(String account_code, String email, String nickname, String profileImage) {
         this.account_code = account_code;

@@ -25,7 +25,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.project"  // 🔥 다시 project로 변경
+        applicationId = "com.example.project"
         minSdk = 29
         targetSdk = 36
         versionCode = 1

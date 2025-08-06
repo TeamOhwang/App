@@ -1,4 +1,4 @@
-package com.example.hackathon.util
+package com.example.project.util
 
 import android.content.Context
 import android.util.Log

@@ -15,12 +15,12 @@
         android:theme="@style/Theme.Hackathon"
         android:usesCleartextTraffic="true" >
         <activity
-            android:name="com.example.hackathon.LogoutActivity"
+            android:name="com.example.project.LogoutActivity"
             android:exported="false" />
 
         <activity
-            android:name="com.example.hackathon.LoginActivity"
-            android:exported="false"></activity>
+            android:name="com.example.project.LoginActivity"
+            android:exported="false" />
         <activity
             android:name="com.example.project.MainActivity"
             android:exported="true">
@@ -34,7 +34,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LiveTalkActivity"
+            android:name="com.example.project.LiveTalkActivity"
             android:exported="false" />
     </application>
 

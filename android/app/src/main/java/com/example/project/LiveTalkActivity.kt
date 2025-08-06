@@ -47,6 +47,11 @@ class LiveTalkActivity : AppCompatActivity() {
         messageRecyclerView = findViewById(R.id.message_recycler_view)
         messageEditText = findViewById(R.id.message_edit_text)
         sendButton = findViewById(R.id.send_button)
+        
+        // 뒤로가기 버튼 설정
+        findViewById<android.widget.ImageButton>(R.id.back_button).setOnClickListener {
+            finish()
+        }
 
         messageAdapter = MessageAdapter(messages)
         messageRecyclerView.layoutManager = LinearLayoutManager(this)

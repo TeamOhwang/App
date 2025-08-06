@@ -1,4 +1,4 @@
-package com.example.hackathon
+package com.example.project
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,8 +7,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.hackathon.util.SessionManager
-import com.example.project.R
+import com.example.project.util.SessionManager
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -36,7 +35,7 @@ class LoginActivity : AppCompatActivity() {
         // Firebase Auth 초기화
         auth = FirebaseAuth.getInstance()
 
-        // Google 로그인 옵션
+        // Google 로그인 옵션 (임시 비활성화)
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
