@@ -37,23 +37,23 @@ public class Comment {
     // 작성자
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+    @JsonBackReference("user-comments")
     private Users user;
 
     // 어떤 게시글의 댓글인지
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
-    @JsonBackReference
+    @JsonBackReference("post-comments")
     private Post post;
 
     // 대댓글(자기참조)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    @JsonBackReference
+    @JsonBackReference("comment-parent")
     private Comment parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference("comment-parent")
     private List<Comment> children = new ArrayList<>();
 
     @Builder

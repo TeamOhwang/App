@@ -32,12 +32,12 @@ public class Like {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+    @JsonBackReference("user-likes")
     private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonBackReference
     @JoinColumn(name = "post_id")
+    @JsonBackReference("post-likes")
     private Post post;
 
     @Builder

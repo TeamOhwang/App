@@ -43,15 +43,15 @@ public class Post {
     // 연관관계
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+    @JsonBackReference("user-posts")
     private Users user;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference("post-comments")
     private List<Comment> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    @JsonManagedReference
+    @JsonManagedReference("post-likes")
     private List<Like> likes = new ArrayList<>();
 
 
