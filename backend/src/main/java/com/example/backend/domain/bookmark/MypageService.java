@@ -57,6 +57,12 @@ public List<PostWithLikeCountDto> myPostsWithLikeCount(Long userId) {
         .toList();
 }
 
+@Transactional //회원탈퇴
+public void deleteUser(Long userId) {
+    Users user = userRepository.findById(userId)
+        .orElseThrow(() -> new RuntimeException("User not found")); 
+    userRepository.delete(user);
+}
 
 
 }           

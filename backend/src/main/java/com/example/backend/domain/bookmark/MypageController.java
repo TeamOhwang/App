@@ -3,6 +3,7 @@ package com.example.backend.domain.bookmark;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,6 +49,17 @@ public ResponseEntity<List<Post>> getLikedPosts(@PathVariable Long userId) {
 }
 
 
+@DeleteMapping("/mypage/withdraw/{userId}")
+public ResponseEntity<String> withdrawUser(@PathVariable Long userId) {
+    mypageService.deleteUser(userId); 
+    return ResponseEntity.ok("회원 탈퇴가 완료되었습니다."); 
+}
+
+
+@GetMapping("/mypage/withdraw-test/{userId}")
+public ResponseEntity<String> withdrawTest(@PathVariable Long userId) {
+    return ResponseEntity.ok("받음: " + userId);
+}
 
 }
 
