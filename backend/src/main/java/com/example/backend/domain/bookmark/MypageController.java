@@ -18,12 +18,12 @@ import com.example.backend.entity.Users;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/mypage")
+@RequestMapping("/api/")
 @RequiredArgsConstructor
 public class MypageController {
         private final MypageService mypageService;
 
-@GetMapping("/profile/{userId}")//내 프로필 불러오기
+@GetMapping("/mypage/{userId}")//내 프로필 불러오기
 public ResponseEntity<UserProfileDto> getMyProfile(@PathVariable Long userId) {
     Users user = mypageService.getMyProfileEntity(userId);
     return ResponseEntity.ok(new UserProfileDto(user));
