@@ -13,3 +13,15 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# 🔑 Keystore files
+# 기본적으로 모든 키스토어 제외
+*.keystore
+*.jks
+
+# 🎯 팀 공용 debug 키스토어는 포함 (예외 처리)
+!app/team-debug.keystore
+
+# ⚠️ Release 키스토어는 절대 포함하지 말것
+app/release.keystore
+app/upload.keystore
