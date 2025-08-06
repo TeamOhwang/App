@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.hackathon.util.SessionManager
@@ -43,7 +44,7 @@ class LoginActivity : AppCompatActivity() {
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
-        findViewById<Button>(R.id.btnGoogleLogin).setOnClickListener {
+        findViewById<ImageView>(R.id.btnGoogleLogin).setOnClickListener {
             signIn()
         }
     }
