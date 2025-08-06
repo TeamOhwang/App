@@ -1,10 +1,11 @@
 package com.example.backend.repository;
 
-import com.example.backend.entity.Users;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import com.example.backend.entity.Users;
 
 @Repository
 public interface UserRepository extends JpaRepository<Users, Long> {
@@ -16,6 +17,9 @@ public interface UserRepository extends JpaRepository<Users, Long> {
      * @return 이메일에 해당하는 Users 엔티티를 포함하는 Optional 객체
      */
     Optional<Users> findByEmail(String email);
+
+    // 아이디로 사용자를 찾는 메서드
+    Optional<Users> findById(Long userId);
 
     /**
      * 닉네임으로 사용자를 찾는 메서드입니다.

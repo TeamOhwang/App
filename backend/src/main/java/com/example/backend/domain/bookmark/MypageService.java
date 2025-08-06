@@ -1,13 +1,14 @@
 package com.example.backend.domain.bookmark;
 
 import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.example.backend.domain.bookmark.DTO.PostWithLikeCountDto;
 import com.example.backend.domain.like.LikeRepository;
 import com.example.backend.domain.post.Post;
-import com.example.backend.domain.post.PostRepository;
 import com.example.backend.entity.Users;
+import com.example.backend.repository.PostRepository;
 import com.example.backend.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -50,8 +51,7 @@ public List<PostWithLikeCountDto> myPostsWithLikeCount(Long userId) {
     return posts.stream()
         .map(post -> new PostWithLikeCountDto(
             post.getId(),
-            post.getTitle(),
-            post.getDescription(),
+            post.getContent(),
             (long) post.getLikes().size()
         ))
         .toList();
