@@ -2,16 +2,16 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.gms.google-services")
+    // id("com.google.gms.google-services") // 임시 비활성화
 }
 
 
 android {
-    namespace = "com.example.hackathon"
+    namespace = "com.example.project"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.hackathon"
+        applicationId = "com.example.project"
         minSdk = 29
         targetSdk = 36
         versionCode = 1
@@ -63,11 +63,14 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    // ✅ Firebase & Google Sign-In
-    implementation("com.google.firebase:firebase-auth:23.0.0")
-    implementation("com.google.android.gms:play-services-auth:21.1.1")
+    // ✅ Firebase & Google Sign-In (임시 비활성화)
+    // implementation("com.google.firebase:firebase-auth:23.0.0")
+    // implementation("com.google.android.gms:play-services-auth:21.1.1")
 
     // (선택) 네트워크 통신 - MySQL 서버 연동 시
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    
+    // JSON 파싱을 위한 Gson
+    implementation("com.google.code.gson:gson:2.10.1")
 
 }
