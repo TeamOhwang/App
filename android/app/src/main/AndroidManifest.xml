@@ -15,7 +15,9 @@
         android:theme="@style/Theme.Hackathon"
         android:usesCleartextTraffic="true"
         >
-
+        <activity
+        android:name="com.example.hackathon.LoginActivity"
+        android:exported="false" />
 
 
         <activity
