@@ -1,41 +1,41 @@
 {
   "project_info": {
-    "project_number": "306297163726",
-    "project_id": "hackerthon-ad900",
-    "storage_bucket": "hackerthon-ad900.firebasestorage.app"
+    "project_number": "520865293048",
+    "project_id": "ohwang-73e13",
+    "storage_bucket": "ohwang-73e13.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:306297163726:android:755902b79153d6c389a59f",
+        "mobilesdk_app_id": "1:520865293048:android:84bffae63a98e41f53510d",
         "android_client_info": {
-          "package_name": "com.example.hackathon"
+          "package_name": "com.example.project"
         }
       },
       "oauth_client": [
         {
-          "client_id": "306297163726-80997k3b17klatc2dfdh2ahjsshdae47.apps.googleusercontent.com",
+          "client_id": "520865293048-5g0kaarmcc8ah1k18j7kr94a0ojo20ca.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.hackathon",
+            "package_name": "com.example.project",
             "certificate_hash": "2f8a82ec56459e91fb2d06ef0421c88f80cd8f34"
           }
         },
         {
-          "client_id": "306297163726-5a9mba5fm6m55nb60ks56r355m8nqi9m.apps.googleusercontent.com",
+          "client_id": "520865293048-k8o7eklje4unb5i3kb3g8lob3jsdp6ng.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA7eAu0hpU7j2r_6pUL08deKjOkP7b8SIc"
+          "current_key": "AIzaSyDYXN8WwzmDBqRT5B5pHagAwpcfJeiYGX0"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "306297163726-5a9mba5fm6m55nb60ks56r355m8nqi9m.apps.googleusercontent.com",
+              "client_id": "520865293048-k8o7eklje4unb5i3kb3g8lob3jsdp6ng.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

@@ -16,12 +16,13 @@
         android:usesCleartextTraffic="true"
         >
         <activity
-        android:name="com.example.hackathon.LoginActivity"
+        android:name="com.example.project.MainActivity"
         android:exported="false" />
 
-
+<!--        android:name="com.example.hackathon.LoginActivity"-->
+<!--        android:name="com.example.project.MainActivity"-->
         <activity
-            android:name="com.example.project.MainActivity"
+            android:name="com.example.hackathon.LoginActivity"
             android:exported="true">
 
             <!-- 앱 시작점 -->

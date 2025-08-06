@@ -6,6 +6,8 @@ import android.util.Log
 import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.hackathon.util.SessionManager
+import com.example.project.MainActivity
 import com.example.project.R
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -14,6 +16,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import okhttp3.Cookie
+import okhttp3.CookieJar
+import okhttp3.HttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -24,12 +29,35 @@ class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+    private lateinit var sessionManager: SessionManager
     private val RC_SIGN_IN = 1001
-    private val client = OkHttpClient()
+
+    // 간단한 쿠키 저장소
+    private val cookieStore = mutableListOf<Cookie>()
+
+    // 커스텀 CookieJar
+    private val cookieJar = object : CookieJar {
+        override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
+            cookieStore.addAll(cookies)
+        }
+
+        override fun loadForRequest(url: HttpUrl): List<Cookie> {
+            return cookieStore.filter { it.matches(url) }
+        }
+    }
+
+    private val client = OkHttpClient.Builder()
+        .cookieJar(cookieJar)
+        .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        sessionManager = SessionManager.getInstance(this)
+
+        // 앱 시작 시 세션 확인 (자동 로그인)
+        checkExistingSession()
 
         // Firebase Auth 초기화
         auth = FirebaseAuth.getInstance()
@@ -44,6 +72,18 @@ class LoginActivity : AppCompatActivity() {
 
         findViewById<Button>(R.id.btnGoogleLogin).setOnClickListener {
             signIn()
+        }
+    }
+
+    private fun checkExistingSession() {
+        sessionManager.checkSession { isValid ->
+            if (isValid) {
+                // 이미 로그인된 상태 - 메인으로 이동
+                runOnUiThread {
+                    moveToMainActivity()
+                }
+            }
+            // 세션이 없으면 로그인 화면 그대로 표시
         }
     }
 
@@ -78,46 +118,75 @@ class LoginActivity : AppCompatActivity() {
                     val email = user?.email ?: ""
                     val photoUrl = user?.photoUrl?.toString() ?: ""
 
-                    // 📌 로그 출력
-                    Log.i("GoogleUser", "아이디 : $uid")
-                    Log.i("GoogleUser", "이름 : $name")
-                    Log.i("GoogleUser", "이메일 : $email")
-                    Log.i("GoogleUser", "프로필 이미지 : $photoUrl")
+                    Log.i("GoogleUser", "Firebase 인증 성공")
+                    Log.i("GoogleUser", "account_code: $uid")
+                    Log.i("GoogleUser", "nickname: $name")
+                    Log.i("GoogleUser", "email: $email")
+                    Log.i("GoogleUser", "profileImage: $photoUrl")
 
-                    // 📌 MySQL 서버로 전송
-                    sendUserDataToServer(uid, name, email, photoUrl)
+                    // 서버로 사용자 정보 전송하여 세션 생성
+                    sendUserDataToServer(uid, email, name, photoUrl)
 
-                    Toast.makeText(this, "환영합니다, $name", Toast.LENGTH_SHORT).show()
                 } else {
                     Log.w("GoogleLogin", "Firebase 로그인 실패", task.exception)
-                    Toast.makeText(this, "Firebase 로그인 실패", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "인증 실패", Toast.LENGTH_SHORT).show()
                 }
             }
     }
 
-    private fun sendUserDataToServer(uid: String, name: String, email: String, photoUrl: String) {
+    private fun sendUserDataToServer(uid: String, email: String, name: String, photoUrl: String) {
         Thread {
             try {
                 val json = JSONObject().apply {
-                    put("uid", uid)
-                    put("name", name)
+                    put("account_code", uid)
                     put("email", email)
-                    put("photoUrl", photoUrl)
+                    put("nickname", name)
+                    put("profileImage", photoUrl)
                 }
 
                 val requestBody = json.toString()
                     .toRequestBody("application/json".toMediaType())
 
                 val request = Request.Builder()
-                    .url("http://10.0.2.2:8080/api/user/save") // 서버 URL
+                    .url("http://10.0.2.2:8081/api/users/social-login")
                     .post(requestBody)
                     .build()
 
                 val response = client.newCall(request).execute()
-                Log.i("GoogleUser", "서버 응답: ${response.body?.string()}")
+                val responseBody = response.body?.string()
+                Log.i("GoogleUser", "서버 응답: $responseBody")
+
+                responseBody?.let { body ->
+                    val jsonResponse = JSONObject(body)
+                    if (jsonResponse.getBoolean("success")) {
+                        // 세션 생성 성공
+                        Log.i("GoogleUser", "세션 생성 완료")
+                        val message = jsonResponse.getString("message")
+
+                        runOnUiThread {
+                            Toast.makeText(this@LoginActivity, message, Toast.LENGTH_SHORT).show()
+                            moveToMainActivity()
+                        }
+                    } else {
+                        runOnUiThread {
+                            Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+
             } catch (e: Exception) {
-                Log.e("GoogleUser", "서버 전송 실패", e)
+                Log.e("GoogleUser", "서버 통신 실패", e)
+                runOnUiThread {
+                    Toast.makeText(this@LoginActivity, "서버 연결 실패", Toast.LENGTH_SHORT).show()
+                }
             }
         }.start()
+    }
+
+    private fun moveToMainActivity() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        finish()
     }
 }
