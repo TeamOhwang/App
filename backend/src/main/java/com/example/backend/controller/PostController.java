@@ -65,8 +65,8 @@ public class PostController {
     @PutMapping("/{postId}")
     public ResponseEntity<?> updatePost(@PathVariable Long postId, @RequestBody PostUpdateRequest requestPost, HttpSession session) {
         // 로그인한 사용자 ID
-        // Long userId = (Long) session.getAttribute("userId");
-        Long userId = 1L;
+        Long userId = (Long) session.getAttribute("userId");
+        // Long userId = 1L;
 
         postService.updatePost(postId, requestPost.getContent(), userId);
 

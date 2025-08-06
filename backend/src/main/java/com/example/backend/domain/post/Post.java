@@ -23,10 +23,12 @@ import jakarta.persistence.Table;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "posts")
 @Getter
+@Setter
 @NoArgsConstructor
 public class Post {
 
@@ -35,6 +37,7 @@ public class Post {
     private Long id;
 
     private String content;
+    private String imgUrl;
     private LocalDateTime createdAt = LocalDateTime.now();
 
     // 연관관계
