@@ -1,25 +1,37 @@
 package com.example.backend.controller;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.example.backend.domain.chat.ChatMessage;
+import com.example.backend.repository.ChatMessageRepository;
 
 @RestController
 @RequestMapping("/api/chat")
 @CrossOrigin(origins = "*")
 public class ChatController {
 
+    @Autowired
+    private ChatMessageRepository chatMessageRepository;
+
     @GetMapping("/history")
     public List<ChatHistoryResponse> getChatHistory() {
-        // 임시 데이터 - 실제로는 데이터베이스에서 가져와야 함
-        List<ChatHistoryResponse> history = new ArrayList<>();
+        // 데이터베이스에서 채팅 히스토리 조회 (시간순 정렬)
+        List<ChatMessage> messages = chatMessageRepository.findAllByOrderByTimestampAsc();
 
-        return history;
+        // DTO로 변환
+        return messages.stream()
+                .map(message -> new ChatHistoryResponse(
+                        message.getSender(),
+                        message.getContent(),
+                        message.getTimestamp().toString()))
+                .collect(Collectors.toList());
     }
 
     // 채팅 히스토리 응답 DTO

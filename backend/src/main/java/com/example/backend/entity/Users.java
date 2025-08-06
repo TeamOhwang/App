@@ -31,20 +31,19 @@ public class Users {
     private String account_code;
     private String email;
     private String nickname;
-    private String profileImage;  // 프로필 이미지 URL
-    
-    
+    private String profileImage; // 프로필 이미지 URL
+
     // 연관 관계
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Post> posts = new ArrayList<>();
-    
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Comment> comments = new ArrayList<>();
-    
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Like> likes = new ArrayList<>();
-    
+
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     private List<ChatMessage> messages = new ArrayList<>();
 

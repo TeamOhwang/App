@@ -15,6 +15,7 @@
         android:theme="@style/Theme.Hackathon"
         android:usesCleartextTraffic="true" >
         <activity
+<<<<<<< Updated upstream
             android:name="com.example.hackathon.LogoutActivity"
             android:exported="false" />
         <activity
@@ -27,6 +28,16 @@
         <activity
             android:name="com.example.hackathon.LoginActivity"
             android:exported="true" >
+=======
+        android:name="com.example.hackathon.LoginActivity"
+        android:exported="false" />
+
+<!--        android:name="com.example.hackathon.LoginActivity"-->
+<!--        android:name="com.example.project.MainActivity"-->
+        <activity
+            android:name="com.example.project.MainActivity"
+            android:exported="true">
+>>>>>>> Stashed changes
 
             <!-- 앱 시작점 -->
             <intent-filter>

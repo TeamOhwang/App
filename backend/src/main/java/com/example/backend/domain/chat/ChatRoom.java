@@ -43,8 +43,9 @@ public class ChatRoom {
     private String name; // Optional - ex: 유저1-유저2
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
-    private List<ChatMessage> messages = new ArrayList<>();
+    // 현재 실시간 채팅에서는 ChatRoom을 사용하지 않으므로 연관관계 제거
+    // @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    // private List<ChatMessage> messages = new ArrayList<>();
 
     @Builder
     public ChatRoom(Users user1, Users user2, String name) {
