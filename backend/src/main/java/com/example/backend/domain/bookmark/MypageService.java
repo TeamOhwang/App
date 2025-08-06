@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.backend.domain.bookmark.DTO.PostWithLikeCountDto;
+import com.example.backend.domain.bookmark.DTO.UserProfileUpdateDto;
 import com.example.backend.domain.like.LikeRepository;
 import com.example.backend.domain.post.Post;
 import com.example.backend.entity.Users;
@@ -29,14 +30,21 @@ public Users getMyProfileEntity(Long userId) {
         .orElseThrow(() -> new RuntimeException("User not found"));
 }
 
-//닉네임수정
-@Transactional(readOnly = true)  
-public void updateMypage(Long userId, String nickname) {
+// 닉네임 , 프로필 이미지 수정
+@Transactional
+public void updateProfile(Long userId, UserProfileUpdateDto dto) {
     Users user = userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("User not found"));
 
-    user.updateNickname(nickname); 
+    if (dto.getNickname() != null && !dto.getNickname().isBlank()) {
+        user.updateNickname(dto.getNickname());
+    }
+
+    if (dto.getProfileImage() != null && !dto.getProfileImage().isBlank()) {
+        user.updateProfileImage(dto.getProfileImage());
+    }
 }
+
 
 // 좋아요한 게시글 불러오기
 @Transactional (readOnly = true)
