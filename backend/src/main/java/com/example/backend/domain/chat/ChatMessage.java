@@ -1,6 +1,6 @@
 package com.example.backend.domain.chat;
 
-import com.example.backend.domain.user.Users;
+import com.example.backend.entity.Users;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.example.backend.domain.comment.Comment;
 import com.example.backend.domain.like.Like;
-import com.example.backend.domain.user.Users;
+import com.example.backend.entity.Users;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
