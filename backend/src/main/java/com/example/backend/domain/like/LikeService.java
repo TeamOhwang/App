@@ -3,8 +3,8 @@ package com.example.backend.domain.like;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.domain.post.Post;
-import com.example.backend.domain.post.PostRepository;
 import com.example.backend.entity.Users;
+import com.example.backend.repository.PostRepository;
 import com.example.backend.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
