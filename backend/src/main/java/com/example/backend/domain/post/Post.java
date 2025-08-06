@@ -65,6 +65,9 @@ public class Post {
         this.content = content;
     }
     
+
+
+    
     // Getter 메서드들 (Lombok @Getter가 있지만 호환성을 위해 추가)
     public void setId(Long id) {
         this.id = id;

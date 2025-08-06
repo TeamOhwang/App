@@ -34,6 +34,8 @@ public class PostService {
 
     }
 
+    
+
     // 게시글 상세 조회
     public Post getPostById(Long postId) {
         return postRepository.findById(postId).orElseThrow(() -> new RuntimeException("게시글을 찾을 수 없습니다"));
