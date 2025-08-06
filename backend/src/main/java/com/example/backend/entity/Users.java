@@ -47,9 +47,6 @@ public class Users {
     @JsonManagedReference("user-likes")
     private List<Like> likes = new ArrayList<>();
 
-
-    // @JsonIgnore
-    // private Lis
      
     @Builder
     public Users(String account_code, String email, String nickname, String profileImage) {
