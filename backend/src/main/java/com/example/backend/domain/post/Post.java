@@ -54,38 +54,15 @@ public class Post {
     @JsonManagedReference
     private List<Like> likes = new ArrayList<>();
 
-    
+
     @Builder
     public Post(String content, Users user) {
         this.content = content;
         this.user = user;
     }
 
-    public void update(String content) {
-        this.content = content;
-    }
     
 
 
-    
-    // Getter 메서드들 (Lombok @Getter가 있지만 호환성을 위해 추가)
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
-    public void setContent(String content) {
-        this.content = content;
-    }
-    
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-    
-    public Users getUser() {
-        return user;
-    }
-    
-    public void setUser(Users user) {
-        this.user = user;
-    }
+
 }
