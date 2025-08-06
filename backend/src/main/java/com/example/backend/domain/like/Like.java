@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.example.backend.domain.post.Post;
 import com.example.backend.entity.Users;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,9 +32,11 @@ public class Like {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
     @JoinColumn(name = "post_id")
     private Post post;
 
