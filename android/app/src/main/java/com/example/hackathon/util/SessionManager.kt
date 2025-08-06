@@ -44,6 +44,49 @@ class SessionManager private constructor(context: Context) {
         }
     }
 
+    // 소셜 로그인 (새로 추가)
+    fun socialLogin(uid: String, email: String, name: String, photoUrl: String,
+                    callback: (Boolean, String) -> Unit) {
+        Thread {
+            try {
+                val json = JSONObject().apply {
+                    put("account_code", uid)
+                    put("email", email)
+                    put("nickname", name)
+                    put("profileImage", photoUrl)
+                }
+
+                val requestBody = json.toString()
+                    .toRequestBody("application/json".toMediaType())
+
+                val request = Request.Builder()
+                    .url("$baseUrl/users/social-login")
+                    .post(requestBody)
+                    .build()
+
+                val response = client.newCall(request).execute()
+                val responseBody = response.body?.string()
+
+                Log.d("SessionManager", "소셜 로그인 응답: $responseBody")
+
+                if (response.isSuccessful && responseBody != null) {
+                    val jsonResponse = JSONObject(responseBody)
+                    if (jsonResponse.getBoolean("success")) {
+                        callback(true, jsonResponse.getString("message"))
+                    } else {
+                        callback(false, jsonResponse.getString("message"))
+                    }
+                } else {
+                    callback(false, "서버 연결 실패")
+                }
+
+            } catch (e: Exception) {
+                Log.e("SessionManager", "소셜 로그인 실패", e)
+                callback(false, "네트워크 오류가 발생했습니다.")
+            }
+        }.start()
+    }
+
     // 현재 로그인된 사용자 정보 조회
     fun getCurrentUser(callback: (Boolean, String?, Map<String, Any>?) -> Unit) {
         Thread {

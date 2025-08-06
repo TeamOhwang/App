@@ -7,7 +7,6 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.hackathon.util.SessionManager
-import com.example.project.MainActivity
 import com.example.project.R
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -16,14 +15,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import okhttp3.Cookie
-import okhttp3.CookieJar
-import okhttp3.HttpUrl
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONObject
 
 class LoginActivity : AppCompatActivity() {
 
@@ -31,24 +22,6 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private lateinit var sessionManager: SessionManager
     private val RC_SIGN_IN = 1001
-
-    // 간단한 쿠키 저장소
-    private val cookieStore = mutableListOf<Cookie>()
-
-    // 커스텀 CookieJar
-    private val cookieJar = object : CookieJar {
-        override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-            cookieStore.addAll(cookies)
-        }
-
-        override fun loadForRequest(url: HttpUrl): List<Cookie> {
-            return cookieStore.filter { it.matches(url) }
-        }
-    }
-
-    private val client = OkHttpClient.Builder()
-        .cookieJar(cookieJar)
-        .build()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,12 +51,14 @@ class LoginActivity : AppCompatActivity() {
     private fun checkExistingSession() {
         sessionManager.checkSession { isValid ->
             if (isValid) {
-                // 이미 로그인된 상태 - 메인으로 이동
+                // 이미 로그인된 상태 - LogoutActivity로 이동
                 runOnUiThread {
-                    moveToMainActivity()
+                    Log.d("LoginActivity", "기존 세션 발견 - LogoutActivity로 이동")
+                    moveToLogoutActivity()
                 }
+            } else {
+                Log.d("LoginActivity", "세션 없음 - 로그인 화면 표시")
             }
-            // 세션이 없으면 로그인 화면 그대로 표시
         }
     }
 
@@ -124,7 +99,7 @@ class LoginActivity : AppCompatActivity() {
                     Log.i("GoogleUser", "email: $email")
                     Log.i("GoogleUser", "profileImage: $photoUrl")
 
-                    // 서버로 사용자 정보 전송하여 세션 생성
+                    // SessionManager를 통해 서버로 사용자 정보 전송
                     sendUserDataToServer(uid, email, name, photoUrl)
 
                 } else {
@@ -135,56 +110,23 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun sendUserDataToServer(uid: String, email: String, name: String, photoUrl: String) {
-        Thread {
-            try {
-                val json = JSONObject().apply {
-                    put("account_code", uid)
-                    put("email", email)
-                    put("nickname", name)
-                    put("profileImage", photoUrl)
-                }
-
-                val requestBody = json.toString()
-                    .toRequestBody("application/json".toMediaType())
-
-                val request = Request.Builder()
-                    .url("http://10.0.2.2:8081/api/users/social-login")
-                    .post(requestBody)
-                    .build()
-
-                val response = client.newCall(request).execute()
-                val responseBody = response.body?.string()
-                Log.i("GoogleUser", "서버 응답: $responseBody")
-
-                responseBody?.let { body ->
-                    val jsonResponse = JSONObject(body)
-                    if (jsonResponse.getBoolean("success")) {
-                        // 세션 생성 성공
-                        Log.i("GoogleUser", "세션 생성 완료")
-                        val message = jsonResponse.getString("message")
-
-                        runOnUiThread {
-                            Toast.makeText(this@LoginActivity, message, Toast.LENGTH_SHORT).show()
-                            moveToMainActivity()
-                        }
-                    } else {
-                        runOnUiThread {
-                            Toast.makeText(this@LoginActivity, "로그인 실패", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-
-            } catch (e: Exception) {
-                Log.e("GoogleUser", "서버 통신 실패", e)
-                runOnUiThread {
-                    Toast.makeText(this@LoginActivity, "서버 연결 실패", Toast.LENGTH_SHORT).show()
+        // SessionManager의 socialLogin 메소드 사용
+        sessionManager.socialLogin(uid, email, name, photoUrl) { success, message ->
+            runOnUiThread {
+                if (success) {
+                    Log.i("LoginActivity", "서버 로그인 성공: $message")
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                    moveToLogoutActivity()
+                } else {
+                    Log.e("LoginActivity", "서버 로그인 실패: $message")
+                    Toast.makeText(this, "로그인 실패: $message", Toast.LENGTH_SHORT).show()
                 }
             }
-        }.start()
+        }
     }
 
-    private fun moveToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
+    private fun moveToLogoutActivity() {
+        val intent = Intent(this, LogoutActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
         finish()
