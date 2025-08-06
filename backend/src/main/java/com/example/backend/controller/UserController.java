@@ -3,8 +3,11 @@ package com.example.backend.controller;
 import com.example.backend.entity.Users;
 import com.example.backend.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -20,6 +23,7 @@ public class UserController {
 
     // 소셜 로그인 (세션 생성)
     @PostMapping("/social-login")
+    @Transactional 
     public ResponseEntity<Map<String, Object>> socialLogin(
             @RequestBody Users incomingUser, 
             HttpSession session) {
