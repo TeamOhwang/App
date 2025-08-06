@@ -22,61 +22,53 @@ public class MypageService {
     private final LikeRepository likeRepository;
     private final PostRepository postRepository;
 
-
-// 내 프로필 불러오기
-@Transactional(readOnly = true)
-public Users getMyProfileEntity(Long userId) {
-    return userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("User not found"));
-}
-
-// 닉네임 , 프로필 이미지 수정
-@Transactional
-public void updateProfile(Long userId, UserProfileUpdateDto dto) {
-    Users user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("User not found"));
-
-    if (dto.getNickname() != null && !dto.getNickname().isBlank()) {
-        user.updateNickname(dto.getNickname());
+    // 내 프로필 불러오기
+    @Transactional(readOnly = true)
+    public Users getMyProfileEntity(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    if (dto.getProfileImage() != null && !dto.getProfileImage().isBlank()) {
-        user.updateProfileImage(dto.getProfileImage());
+    // 닉네임 , 프로필 이미지 수정
+    @Transactional
+    public void updateProfile(Long userId, UserProfileUpdateDto dto) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (dto.getNickname() != null && !dto.getNickname().isBlank()) {
+            user.updateNickname(dto.getNickname());
+        }
+
+        if (dto.getProfileImage() != null && !dto.getProfileImage().isBlank()) {
+            user.updateProfileImage(dto.getProfileImage());
+        }
     }
+
+    // 좋아요한 게시글 불러오기
+    @Transactional(readOnly = true)
+    public List<Post> getLikedPosts(Long userId) {
+        return likeRepository.findLikedPostsByUserId(userId);
+    }
+
+    // 내 게시글과 좋아요 수 불러오기
+    @Transactional(readOnly = true)
+    public List<PostWithLikeCountDto> myPostsWithLikeCount(Long userId) {
+        List<Post> posts = postRepository.findByUser_Id(userId);
+
+        return posts.stream()
+                .map(post -> new PostWithLikeCountDto(
+                        post.getId(),
+                        post.getContent(),
+                        (long) post.getLikes().size()))
+                .toList();
+    }
+
+    // 회원탈퇴
+    @Transactional
+    public void deleteUser(Long userId) {
+        Users user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        userRepository.delete(user);
+    }
+
 }
-
-
-// 좋아요한 게시글 불러오기
-@Transactional (readOnly = true)
-public List<Post> getLikedPosts(Long userId) {
-    return likeRepository.findLikedPostsByUserId(userId);
-}
-
-// 내 게시글과 좋아요 수 불러오기
-@Transactional (readOnly = true)
-public List<PostWithLikeCountDto> myPostsWithLikeCount(Long userId) {
-    List<Post> posts = postRepository.findByUser_Id(userId);
-
-    return posts.stream()
-        .map(post -> new PostWithLikeCountDto(
-            post.getId(),
-            post.getContent(),
-            (long) post.getLikes().size()
-        ))
-        .toList();
-}
-
-//회원탈퇴
-@Transactional 
-public void deleteUser(Long userId) {
-    Users user = userRepository.findById(userId)
-        .orElseThrow(() -> new RuntimeException("User not found")); 
-    userRepository.delete(user);
-}
-
-
-}           
-
-
-    
-
