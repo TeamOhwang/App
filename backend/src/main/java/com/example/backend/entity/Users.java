@@ -48,7 +48,8 @@ public class Users {
     private List<ChatMessage> messages = new ArrayList<>();
 
     @Builder
-    public Users(String email, String nickname, String profileImage) {
+    public Users(String account_code, String email, String nickname, String profileImage) {
+        this.account_code = account_code;
         this.email = email;
         this.nickname = nickname;
         this.profileImage = profileImage;
