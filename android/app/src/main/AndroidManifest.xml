@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" >
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -13,31 +13,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Hackathon"
-        android:usesCleartextTraffic="true" >
+        android:usesCleartextTraffic="true">
         <activity
-<<<<<<< Updated upstream
+            android:name=".MyPage"
+            android:exported="false" />
+        <activity
             android:name="com.example.hackathon.LogoutActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.hackathon.MainActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
+            android:name="com.example.hackathon.LoginActivity"
             android:exported="false" /> <!-- android:name="com.example.hackathon.LoginActivity" -->
         <!-- android:name="com.example.project.MainActivity" -->
         <activity
-            android:name="com.example.hackathon.LoginActivity"
-            android:exported="true" >
-=======
-        android:name="com.example.hackathon.LoginActivity"
-        android:exported="false" />
-
-<!--        android:name="com.example.hackathon.LoginActivity"-->
-<!--        android:name="com.example.project.MainActivity"-->
-        <activity
-            android:name="com.example.project.MainActivity"
+            android:name=".MainActivity"
             android:exported="true">
->>>>>>> Stashed changes
 
             <!-- 앱 시작점 -->
             <intent-filter>

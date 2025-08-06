@@ -47,7 +47,6 @@ public class PostController {
 
 
     // 전체 게시글 목록 조회
-    // @Transactional(readOnly = true)
     @GetMapping
     public ResponseEntity<List<Post>> getAllPosts() {
         List<Post> posts = postService.getAllPosts();
