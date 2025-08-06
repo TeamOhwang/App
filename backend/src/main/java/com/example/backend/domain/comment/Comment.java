@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.backend.domain.post.Post;
-import com.example.backend.domain.user.Users;
+import com.example.backend.entity.Users;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
