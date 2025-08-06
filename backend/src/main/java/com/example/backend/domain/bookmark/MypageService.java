@@ -3,6 +3,7 @@ package com.example.backend.domain.bookmark;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.backend.domain.bookmark.DTO.PostWithLikeCountDto;
 import com.example.backend.domain.like.LikeRepository;
@@ -11,7 +12,6 @@ import com.example.backend.entity.Users;
 import com.example.backend.repository.PostRepository;
 import com.example.backend.repository.UserRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -22,15 +22,15 @@ public class MypageService {
     private final PostRepository postRepository;
 
 
-
-@Transactional //내 프로필 불러오기
+// 내 프로필 불러오기
+@Transactional(readOnly = true)
 public Users getMyProfileEntity(Long userId) {
     return userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("User not found"));
 }
 
-
-@Transactional  //닉네임수정
+//닉네임수정
+@Transactional(readOnly = true)  
 public void updateMypage(Long userId, String nickname) {
     Users user = userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("User not found"));
@@ -38,13 +38,14 @@ public void updateMypage(Long userId, String nickname) {
     user.updateNickname(nickname); 
 }
 
-
-@Transactional // 좋아요한 게시글 불러오기
+// 좋아요한 게시글 불러오기
+@Transactional (readOnly = true)
 public List<Post> getLikedPosts(Long userId) {
     return likeRepository.findLikedPostsByUserId(userId);
 }
 
-@Transactional // 내 게시글과 좋아요 수 불러오기
+// 내 게시글과 좋아요 수 불러오기
+@Transactional (readOnly = true)
 public List<PostWithLikeCountDto> myPostsWithLikeCount(Long userId) {
     List<Post> posts = postRepository.findByUser_Id(userId);
 
@@ -57,7 +58,8 @@ public List<PostWithLikeCountDto> myPostsWithLikeCount(Long userId) {
         .toList();
 }
 
-@Transactional //회원탈퇴
+//회원탈퇴
+@Transactional 
 public void deleteUser(Long userId) {
     Users user = userRepository.findById(userId)
         .orElseThrow(() -> new RuntimeException("User not found")); 
