@@ -27,10 +27,12 @@ public class PostController {
 
     // 게시글 생성
     @PostMapping("/create")
-    public ResponseEntity<?> createPost(@RequestBody Post post,
+    public ResponseEntity<?> createPost(@RequestBody Post post
                                         // HttpSession으로 사용자 정보 
-                                        HttpSession session) {
+                                        , HttpSession session
+                                        ) {
         Long userId = (Long) session.getAttribute("userId");
+        // Long userId = 1L; 테스트용
         postService.create(post, userId);
         return ResponseEntity.ok("게시글이 등록되었습니다");
     }

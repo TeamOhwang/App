@@ -7,6 +7,7 @@ import java.util.List;
 import com.example.backend.domain.comment.Comment;
 import com.example.backend.domain.like.Like;
 import com.example.backend.entity.Users;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -38,6 +39,7 @@ public class Post {
     // 연관관계
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private Users user;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)

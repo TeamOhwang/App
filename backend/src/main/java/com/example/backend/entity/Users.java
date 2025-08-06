@@ -1,6 +1,5 @@
 package com.example.backend.entity;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +7,7 @@ import com.example.backend.domain.chat.ChatMessage;
 import com.example.backend.domain.comment.Comment;
 import com.example.backend.domain.like.Like;
 import com.example.backend.domain.post.Post;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -36,6 +36,7 @@ public class Users {
     
     // 연관 관계
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Post> posts = new ArrayList<>();
     
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
