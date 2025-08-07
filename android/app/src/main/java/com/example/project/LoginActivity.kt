@@ -116,7 +116,7 @@ class LoginActivity : AppCompatActivity() {
                 if (success) {
                     Log.i("LoginActivity", "서버 로그인 성공: $message")
                     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-                    moveToLogoutActivity()
+                    moveToMainActivity()
                 } else {
                     Log.e("LoginActivity", "서버 로그인 실패: $message")
                     Toast.makeText(this, "로그인 실패: $message", Toast.LENGTH_SHORT).show()
@@ -128,6 +128,12 @@ class LoginActivity : AppCompatActivity() {
     private fun moveToLogoutActivity() {
         val intent = Intent(this, LogoutActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        finish()
+    }
+
+    private fun moveToMainActivity() {
+        val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
     }

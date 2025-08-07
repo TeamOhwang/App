@@ -22,10 +22,10 @@
             android:exported="false" />
 
         <activity
-            android:name="com.example.project.LoginActivity"
+            android:name="com.example.project.MainActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.project.MainActivity"
+            android:name="com.example.project.LoginActivity"
             android:exported="true">
 
 
