@@ -14,19 +14,20 @@
     <!-- 로그아웃 버튼 -->
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="196dp"
-        android:layout_height="241dp">
+        android:layout_width="213dp"
+        android:layout_height="272dp">
 
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="50dp"
-            android:backgroundTint="#2196F3"
+            android:layout_marginBottom="72dp"
+            android:backgroundTint="#EF991F"
             android:text="로그아웃"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
@@ -44,8 +45,8 @@
             android:id="@+id/tvUserEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="45dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="40dp"
             android:text="이메일: user@example.com"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
