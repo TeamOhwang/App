@@ -6,6 +6,7 @@ import com.example.project.R
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -58,6 +59,8 @@ class SessionManager private constructor(private val context: Context) {
         }
     }
 
+    // ==================== 익명 모드 관련 메소드 ====================
+
     // 익명 모드 설정
     fun setAnonymousMode(anonymous: Boolean) {
         isAnonymousMode = anonymous
@@ -72,6 +75,74 @@ class SessionManager private constructor(private val context: Context) {
     fun isAnonymousMode(): Boolean {
         return isAnonymousMode
     }
+
+    // ==================== 쿠키 접근 메소드들 ====================
+
+    // 1. 모든 쿠키 가져오기
+    fun getAllCookies(): List<Cookie> {
+        return cookieStore.toList() // 복사본 반환으로 안전성 확보
+    }
+
+    // 2. 특정 이름의 쿠키 가져오기
+    fun getCookie(name: String): Cookie? {
+        return cookieStore.find { it.name == name }
+    }
+
+    // 3. 특정 URL에 해당하는 쿠키들 가져오기
+    fun getCookiesForUrl(url: String): List<Cookie> {
+        val httpUrl = try {
+            url.toHttpUrlOrNull()
+        } catch (e: Exception) {
+            null
+        } ?: return emptyList()
+        return cookieStore.filter { it.matches(httpUrl) }
+    }
+
+    // 4. 세션 쿠키 가져오기 (일반적으로 JSESSIONID)
+    fun getSessionCookie(): Cookie? {
+        return cookieStore.find {
+            it.name.equals("JSESSIONID", ignoreCase = true) ||
+                    it.name.equals("sessionid", ignoreCase = true) ||
+                    it.name.contains("session", ignoreCase = true)
+        }
+    }
+
+    // 5. 쿠키를 Cookie 헤더 문자열로 변환
+    fun getCookieHeader(url: String): String {
+        val cookies = getCookiesForUrl(url)
+        return cookies.joinToString("; ") { "${it.name}=${it.value}" }
+    }
+
+    // 6. OkHttpClient 인스턴스 가져오기 (다른 곳에서 같은 쿠키 사용)
+    fun getHttpClient(): OkHttpClient {
+        return client
+    }
+
+    // 7. 쿠키 수동 추가 (필요한 경우)
+    fun addCookie(cookie: Cookie) {
+        cookieStore.add(cookie)
+        Log.d("SessionManager", "쿠키 추가: ${cookie.name}=${cookie.value}")
+    }
+
+    // 8. 특정 쿠키 삭제
+    fun removeCookie(name: String) {
+        val removed = cookieStore.removeAll { it.name == name }
+        if (removed) {
+            Log.d("SessionManager", "쿠키 삭제: $name")
+        }
+    }
+
+    // 9. 세션 ID만 간단히 가져오기
+    fun getSessionId(): String? {
+        return getSessionCookie()?.value
+    }
+
+    // 10. 쿠키 개수 확인
+    fun getCookieCount(): Int {
+        return cookieStore.size
+    }
+
+    // ==================== 인증 관련 메소드들 ====================
 
     // 소셜 로그인
     fun socialLogin(uid: String, email: String, name: String, photoUrl: String,
@@ -104,6 +175,7 @@ class SessionManager private constructor(private val context: Context) {
                 if (response.isSuccessful && responseBody != null) {
                     val jsonResponse = JSONObject(responseBody)
                     if (jsonResponse.getBoolean("success")) {
+                        Log.d("SessionManager", "로그인 후 쿠키 개수: ${getCookieCount()}")
                         callback(true, jsonResponse.getString("message"))
                     } else {
                         callback(false, jsonResponse.getString("message"))
@@ -146,6 +218,7 @@ class SessionManager private constructor(private val context: Context) {
                 val responseBody = response.body?.string()
 
                 Log.d("SessionManager", "현재 사용자 조회: $responseBody")
+                Log.d("SessionManager", "요청 시 쿠키 개수: ${getCookieCount()}")
 
                 if (response.isSuccessful && responseBody != null) {
                     val jsonResponse = JSONObject(responseBody)
@@ -192,6 +265,7 @@ class SessionManager private constructor(private val context: Context) {
                 val responseBody = response.body?.string()
 
                 Log.d("SessionManager", "세션 확인: $responseBody")
+                Log.d("SessionManager", "세션 확인 시 쿠키 개수: ${getCookieCount()}")
 
                 if (response.isSuccessful && responseBody != null) {
                     val jsonResponse = JSONObject(responseBody)
@@ -233,8 +307,9 @@ class SessionManager private constructor(private val context: Context) {
                     val jsonResponse = JSONObject(responseBody)
                     if (jsonResponse.getBoolean("success")) {
                         // 서버 로그아웃 성공 시 로컬 쿠키도 삭제
+                        Log.d("SessionManager", "로그아웃 전 쿠키 개수: ${getCookieCount()}")
                         cookieStore.clear()
-                        Log.d("SessionManager", "로컬 쿠키 삭제 완료")
+                        Log.d("SessionManager", "로컬 쿠키 삭제 완료, 현재 쿠키 개수: ${getCookieCount()}")
                         callback(true, jsonResponse.getString("message"))
                     } else {
                         callback(false, "서버 로그아웃 실패")
