@@ -103,7 +103,7 @@ class LogoutActivity : AppCompatActivity() {
                 btnLogout.text = "로그아웃"
 
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-                moveToLoginActivity()
+                moveToMainActivity()
             }
         }
     }
@@ -112,6 +112,15 @@ class LogoutActivity : AppCompatActivity() {
         Log.d("LogoutActivity", "LoginActivity로 이동")
 
         val intent = Intent(this, LoginActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+        finish()
+    }
+    
+    private fun moveToMainActivity() {
+        Log.d("LogoutActivity", "MainActivity로 이동")
+
+        val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
         finish()

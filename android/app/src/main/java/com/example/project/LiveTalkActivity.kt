@@ -7,6 +7,7 @@ import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.project.util.SessionManager
 import com.google.gson.Gson
 import okhttp3.*
 import okio.ByteString
@@ -28,6 +29,8 @@ class LiveTalkActivity : AppCompatActivity() {
     private val messages = mutableListOf<Message>()
     private val gson = Gson()
     private var isWebSocketConnected = false
+    private lateinit var sessionManager: SessionManager
+    private var currentUserNickname: String = "User"
 
     // 안드로이드 에뮬레이터에서 로컬 스프링 서버에 접속할 주소
     private lateinit var serverUrl: String
@@ -58,21 +61,21 @@ class LiveTalkActivity : AppCompatActivity() {
             finish()
         }
 
-        messageAdapter = MessageAdapter(messages)
         messageRecyclerView.layoutManager = LinearLayoutManager(this)
-        messageRecyclerView.adapter = messageAdapter
 
         // 초기 상태에서 전송 버튼 비활성화
         sendButton.isEnabled = false
 
-        client = OkHttpClient()
-        loadChatHistory() // 채팅 히스토리 먼저 로드
-        connectWebSocket()
+        // SessionManager 초기화
+        sessionManager = SessionManager.getInstance(this)
+        
+        // 현재 사용자 정보 가져오기
+        getCurrentUserInfo()
 
         sendButton.setOnClickListener {
             val messageContent = messageEditText.text.toString()
             if (messageContent.isNotEmpty()) {
-                val message = Message("User", messageContent, Date().toString())
+                val message = Message(currentUserNickname, messageContent, Date().toString())
                 sendMessage(message)
                 messageEditText.text.clear()
             }
@@ -95,23 +98,26 @@ class LiveTalkActivity : AppCompatActivity() {
                 try {
                     val receivedMessage = gson.fromJson(text, Message::class.java)
                     runOnUiThread {
-                        // 중복 메시지 방지 (시스템 메시지 제외)
-                        if (receivedMessage.sender != "System" || receivedMessage.content == "채팅방에 연결되었습니다.") {
-                            // 이미 존재하는 메시지인지 확인 (내용과 시간으로 비교)
-                            val isDuplicate = messages.any { 
-                                it.content == receivedMessage.content && 
-                                it.sender == receivedMessage.sender &&
-                                it.timestamp == receivedMessage.timestamp 
-                            }
-                            
-                            if (!isDuplicate) {
-                                messages.add(receivedMessage)
-                                messageAdapter.notifyItemInserted(messages.size - 1)
-                                messageRecyclerView.scrollToPosition(messages.size - 1)
-                                Log.d("LiveTalkActivity", "새 메시지 추가: ${receivedMessage.content}")
-                            } else {
-                                Log.d("LiveTalkActivity", "중복 메시지 무시: ${receivedMessage.content}")
-                            }
+                        // 시스템 연결 메시지는 무시
+                        if (receivedMessage.sender == "System" && receivedMessage.content == "채팅방에 연결되었습니다.") {
+                            Log.d("LiveTalkActivity", "시스템 연결 메시지 무시")
+                            return@runOnUiThread
+                        }
+                        
+                        // 중복 메시지 방지 (내용, 발신자, 시간으로 비교)
+                        val isDuplicate = messages.any { 
+                            it.content == receivedMessage.content && 
+                            it.sender == receivedMessage.sender &&
+                            it.timestamp == receivedMessage.timestamp 
+                        }
+                        
+                        if (!isDuplicate) {
+                            messages.add(receivedMessage)
+                            messageAdapter.notifyItemInserted(messages.size - 1)
+                            messageRecyclerView.scrollToPosition(messages.size - 1)
+                            Log.d("LiveTalkActivity", "새 메시지 추가: ${receivedMessage.sender}: ${receivedMessage.content}")
+                        } else {
+                            Log.d("LiveTalkActivity", "중복 메시지 무시: ${receivedMessage.content}")
                         }
                     }
                 } catch (e: Exception) {
@@ -240,6 +246,35 @@ class LiveTalkActivity : AppCompatActivity() {
                 }
             }
         }.start()
+    }
+
+    private fun getCurrentUserInfo() {
+        sessionManager.getCurrentUser { success, error, userInfo ->
+            if (success && userInfo != null) {
+                currentUserNickname = userInfo["nickname"] as? String ?: "User"
+                Log.d("LiveTalkActivity", "현재 사용자: $currentUserNickname")
+                
+                // 사용자 정보를 가져온 후 UI 초기화
+                runOnUiThread {
+                    initializeChat()
+                }
+            } else {
+                Log.e("LiveTalkActivity", "사용자 정보 가져오기 실패: $error")
+                // 로그인이 필요한 경우 LoginActivity로 이동
+                runOnUiThread {
+                    finish()
+                }
+            }
+        }
+    }
+    
+    private fun initializeChat() {
+        messageAdapter = MessageAdapter(messages, currentUserNickname)
+        messageRecyclerView.adapter = messageAdapter
+        
+        client = OkHttpClient()
+        loadChatHistory() // 채팅 히스토리 먼저 로드
+        connectWebSocket()
     }
 
     override fun onDestroy() {

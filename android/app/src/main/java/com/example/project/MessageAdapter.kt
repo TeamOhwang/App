@@ -9,7 +9,10 @@ import androidx.recyclerview.widget.RecyclerView
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MessageAdapter(private val messages: List<Message>) : RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
+class MessageAdapter(
+    private val messages: List<Message>,
+    private val currentUserNickname: String = "User"
+) : RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
 
     class MessageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         // 내 메시지 뷰들
@@ -39,8 +42,8 @@ class MessageAdapter(private val messages: List<Message>) : RecyclerView.Adapter
             message.timestamp.substring(message.timestamp.length - 8, message.timestamp.length - 3)
         }
 
-        // "User"가 보낸 메시지는 내 메시지로 처리
-        if (message.sender == "User") {
+        // 현재 사용자가 보낸 메시지는 내 메시지로 처리
+        if (message.sender == currentUserNickname) {
             // 내 메시지 표시
             holder.myMessageLayout.visibility = View.VISIBLE
             holder.otherMessageLayout.visibility = View.GONE

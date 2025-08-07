@@ -3,6 +3,8 @@ package com.example.backend.repository;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.example.backend.entity.Users;
@@ -37,4 +39,13 @@ public interface UserRepository extends JpaRepository<Users, Long> {
      * @return 이메일이 존재하면 true, 아니면 false
      */
     boolean existsByEmail(String email);
+
+    /**
+     * account_code로 사용자를 찾는 메서드입니다.
+     * 
+     * @param accountCode 찾을 사용자의 account_code
+     * @return account_code에 해당하는 Users 엔티티를 포함하는 Optional 객체
+     */
+    @Query("SELECT u FROM Users u WHERE u.account_code = :accountCode")
+    Optional<Users> findByAccount_code(@Param("accountCode") String accountCode);
 }

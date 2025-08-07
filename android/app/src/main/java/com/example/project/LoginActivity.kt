@@ -54,9 +54,9 @@ class LoginActivity : AppCompatActivity() {
     private fun checkExistingSession() {
         sessionManager.checkSession { isValid ->
             if (isValid) {
-                // 이미 로그인된 상태 - LogoutActivity로 이동
+                // 이미 로그인된 상태 - MainActivity로 이동
                 runOnUiThread {
-                    Log.d("LoginActivity", "기존 세션 발견 - LogoutActivity로 이동")
+                    Log.d("LoginActivity", "기존 세션 발견 - MainActivity로 이동")
                     moveToLogoutActivity()
                 }
             } else {
@@ -129,7 +129,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun moveToLogoutActivity() {
-        val intent = Intent(this, LogoutActivity::class.java)
+        val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
         finish()

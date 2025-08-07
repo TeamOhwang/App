@@ -2,6 +2,7 @@ package com.example.project.util
 
 import android.content.Context
 import android.util.Log
+import com.example.project.R
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
@@ -11,7 +12,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 
-class SessionManager private constructor(context: Context) {
+class SessionManager private constructor(private val context: Context) {
 
     // 간단한 쿠키 저장소
     private val cookieStore = mutableListOf<Cookie>()
@@ -31,7 +32,17 @@ class SessionManager private constructor(context: Context) {
         .cookieJar(cookieJar)
         .build()
 
-    private val baseUrl = "http://10.0.2.2:8081/api"
+    private val baseUrl: String
+        get() {
+            val port = context.getString(R.string.server_port)
+            val serverIp = context.getString(R.string.server_ip)
+            val baseIp = if (serverIp == "auto") {
+                "10.0.2.2"
+            } else {
+                serverIp
+            }
+            return "http://$baseIp:$port/api"
+        }
 
     companion object {
         @Volatile
