@@ -18,14 +18,14 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/comments")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class CommentController {
 
     private final CommentService commentService;
 
     // 댓글/대댓글 작성
-    @PostMapping("/{postId}")
+    @PostMapping("/comments/{postId}")
     public ResponseEntity<Void> createComment(
         @PathVariable Long postId,
         @RequestBody CommentRequestDto dto,
@@ -40,7 +40,7 @@ public class CommentController {
 
     
     // 댓글 삭제
-    @DeleteMapping("/{commentId}")
+    @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<Void> deleteComment(
         @PathVariable Long commentId,
         HttpSession session
@@ -54,7 +54,7 @@ public class CommentController {
 
 
     // 게시글 댓글 + 대댓글 전체 조회
-    @GetMapping("/post/{postId}")
+    @GetMapping("/postAll/{postId}")
     public ResponseEntity<List<Comment>> getCommentsByPost(@PathVariable Long postId) {
         List<Comment> comments = commentService.getCommentsByPost(postId);
         return ResponseEntity.ok(comments);

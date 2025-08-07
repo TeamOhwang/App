@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 @CrossOrigin(origins = "*") // 세션 쿠키 허용
 public class UserController {
 
@@ -132,5 +132,6 @@ public class UserController {
         session.setAttribute("userProfileImage", user.getProfileImage());
         session.setAttribute("userAccountCode", user.getAccount_code());
         session.setAttribute("isLoggedIn", true);
+        session.setAttribute("loginUser", user);
     }
 }

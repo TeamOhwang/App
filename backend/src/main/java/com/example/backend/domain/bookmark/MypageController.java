@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class MypageController {
         private final MypageService mypageService;

@@ -54,7 +54,7 @@ public class PostController {
     }
 
     // 게시글 수정
-     @PutMapping("/{postId}")
+     @PutMapping("/post/{postId}")
     public String updatePost(@PathVariable Long postId, @RequestBody Post updatedPost,HttpSession session) {
         Users user = (Users) session.getAttribute("loginUser");
         if (user == null) return "로그인이 필요합니다.";
@@ -64,7 +64,7 @@ public class PostController {
 
 
     // 게시글 삭제
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/post/{postId}")
     public String deletePost(@PathVariable Long postId, HttpSession session) {
         Users user = (Users) session.getAttribute("loginUser");
         if (user == null) return "로그인이 필요합니다.";

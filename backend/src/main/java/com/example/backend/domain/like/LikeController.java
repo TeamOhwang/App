@@ -12,13 +12,13 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/likes")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class LikeController {
         private final LikeService likeService;
 
        // 좋아요 누르기
-    @PostMapping("/{postId}")
+    @PostMapping("/likes/{postId}")
     public ResponseEntity<Void> like(@PathVariable Long postId, HttpSession session) {
         Users user = (Users) session.getAttribute("loginUser");
         if (user == null) {
@@ -30,7 +30,7 @@ public class LikeController {
     }
 
     // 좋아요 취소
-    @DeleteMapping("/{postId}")
+    @DeleteMapping("/likes/{postId}")
     public ResponseEntity<Void> unlike(@PathVariable Long postId, HttpSession session) {
         Users user = (Users) session.getAttribute("loginUser");
         if (user == null) {
