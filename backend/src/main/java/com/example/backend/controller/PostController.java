@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -48,8 +47,8 @@ public class PostController {
     }
     
     // 게시글 단건 조회
-    @GetMapping("/post")
-    public ResponseEntity<Post> getPostById(@RequestParam Long postId) {
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<Post> getPostById(@PathVariable Long postId) {
           Post posts  = postService.getPostById(postId);
           return ResponseEntity.ok(posts);
     }
