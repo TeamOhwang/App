@@ -91,8 +91,8 @@ class MyPageActivity : AppCompatActivity() {
         }
 
         newPostIcon.setOnClickListener {
-            // TODO: 새 게시물 작성 화면으로 이동
-            Log.d("MyPageActivity", "새 게시물 버튼 클릭")
+            val intent = Intent(this, NewPostActivity::class.java)
+            startActivity(intent)
         }
 
         chatIcon.setOnClickListener {

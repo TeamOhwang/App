@@ -26,7 +26,7 @@
             android:name=".AnonymousMainActivity"
             android:exported="false" />
         <activity
-            android:name=".AnonymousMyPageActivity"
+            android:name=".NewPostActivity"
             android:exported="false" />
         <activity
             android:name=".SplashActivity"

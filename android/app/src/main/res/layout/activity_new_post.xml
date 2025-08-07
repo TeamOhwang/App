@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".NewPostActivity">
+
+    <ImageView
+        android:id="@+id/iv_add_image"
+        android:layout_width="417dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="180dp"
+        android:layout_marginBottom="255dp"
+        android:background="@android:color/darker_gray"
+        android:scaleType="center"
+        android:src="@drawable/ic_camera_icon2"
+        app:layout_constraintBottom_toTopOf="@+id/btnPosting"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.355" />
+
+    <ImageView
+        android:id="@+id/userProfileImg"
+        android:layout_width="62dp"
+        android:layout_height="59dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="32dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnBack"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/userNick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginBottom="42dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toTopOf="@+id/iv_add_image"
+        app:layout_constraintStart_toEndOf="@+id/userProfileImg"
+        app:layout_constraintTop_toBottomOf="@+id/newPost" />
+
+    <Button
+        android:id="@+id/btnBack"
+        android:layout_width="57dp"
+        android:layout_height="37dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="32dp"
+        android:backgroundTint="#FDFDFD"
+        android:text="X"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/newPost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="49dp"
+        android:text="새 게시물"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/userNick"
+        app:layout_constraintStart_toEndOf="@+id/btnBack"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/newContent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginBottom="241dp"
+        android:text="내용을 입력해주세요."
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_add_image" />
+
+    <Button
+        android:id="@+id/btnPosting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:backgroundTint="#2196F3"
+        android:text="게시물 등록"
+        app:cornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_add_image" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
