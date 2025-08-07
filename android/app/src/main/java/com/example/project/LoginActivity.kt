@@ -46,6 +46,9 @@ class LoginActivity : AppCompatActivity() {
         findViewById<ImageView>(R.id.btnGoogleLogin).setOnClickListener {
             signIn()
         }
+        findViewById<Button>(R.id.btnAnonymousStart).setOnClickListener{
+            moveToMainActivity()
+        }
     }
 
     private fun checkExistingSession() {
