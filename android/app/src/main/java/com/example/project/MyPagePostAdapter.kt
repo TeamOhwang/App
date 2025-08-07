@@ -8,8 +8,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 
+// MyPage에서 사용할 간단한 게시물 데이터 클래스
+data class MyPagePost(
+    val id: Long,
+    val imageRes: Int
+)
 
-class PostAdapter : ListAdapter<Post, PostAdapter.PostViewHolder>(PostDiffCallback()) {
+class MyPagePostAdapter : ListAdapter<MyPagePost, MyPagePostAdapter.PostViewHolder>(MyPagePostDiffCallback()) {
 
     class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.postimg)
@@ -23,25 +28,17 @@ class PostAdapter : ListAdapter<Post, PostAdapter.PostViewHolder>(PostDiffCallba
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         val post = getItem(position)
-
-        // 현재 Post 클래스 구조에 맞게 수정
         holder.imageView.setImageResource(post.imageRes)
     }
 }
 
 // DiffUtil을 사용한 효율적인 리스트 업데이트
-class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
-    override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
-        // Post 클래스에 id가 없으므로 다른 필드로 비교
-        return oldItem.username == newItem.username && 
-               oldItem.recipeTitle == newItem.recipeTitle &&
-               oldItem.imageRes == newItem.imageRes
+class MyPagePostDiffCallback : DiffUtil.ItemCallback<MyPagePost>() {
+    override fun areItemsTheSame(oldItem: MyPagePost, newItem: MyPagePost): Boolean {
+        return oldItem.id == newItem.id
     }
 
-    override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {
+    override fun areContentsTheSame(oldItem: MyPagePost, newItem: MyPagePost): Boolean {
         return oldItem == newItem
     }
 }
-
-
-

@@ -30,7 +30,9 @@ public class ChatController {
                 .map(message -> new ChatHistoryResponse(
                         message.getSender(),
                         message.getContent(),
-                        message.getTimestamp().toString()))
+                        message.getTimestamp().toString(),
+                        message.getMessageType(),
+                        message.getImageUrl()))
                 .collect(Collectors.toList());
     }
 
@@ -39,14 +41,18 @@ public class ChatController {
         private String sender;
         private String content;
         private String timestamp;
+        private String messageType = "text";
+        private String imageUrl;
 
         public ChatHistoryResponse() {
         }
 
-        public ChatHistoryResponse(String sender, String content, String timestamp) {
+        public ChatHistoryResponse(String sender, String content, String timestamp, String messageType, String imageUrl) {
             this.sender = sender;
             this.content = content;
             this.timestamp = timestamp;
+            this.messageType = messageType;
+            this.imageUrl = imageUrl;
         }
 
         // Getters and Setters
@@ -72,6 +78,22 @@ public class ChatController {
 
         public void setTimestamp(String timestamp) {
             this.timestamp = timestamp;
+        }
+
+        public String getMessageType() {
+            return messageType;
+        }
+
+        public void setMessageType(String messageType) {
+            this.messageType = messageType;
+        }
+
+        public String getImageUrl() {
+            return imageUrl;
+        }
+
+        public void setImageUrl(String imageUrl) {
+            this.imageUrl = imageUrl;
         }
     }
 }

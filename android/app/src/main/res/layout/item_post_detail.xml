@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp"
+    android:background="@android:color/white">
+
+    <!-- 프로필 이미지 -->
+    <ImageView
+        android:id="@+id/ivProfile"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_profile_placeholder"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 사용자 이름 -->
+    <TextView
+        android:id="@+id/tvUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="집밥나선생"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/ivProfile"
+        app:layout_constraintStart_toEndOf="@id/ivProfile"
+        app:layout_constraintTop_toTopOf="@id/ivProfile" />
+
+    <!-- 게시글 이미지 -->
+    <ImageView
+        android:id="@+id/ivPost"
+        android:layout_width="0dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="12dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/img_salad"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivProfile" />
+
+    <!-- 좋아요, 댓글 버튼 -->
+    <LinearLayout
+        android:id="@+id/llActions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/ivPost">
+
+        <ImageView
+            android:id="@+id/ivLike"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_heart_empty"
+            android:contentDescription="좋아요" />
+
+        <ImageView
+            android:id="@+id/ivComment"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_comment"
+            android:contentDescription="댓글" />
+
+    </LinearLayout>
+
+    <!-- 좋아요 개수 -->
+    <TextView
+        android:id="@+id/tvLikeCount"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="10"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/llActions" />
+
+    <!-- 게시글 설명 -->
+    <TextView
+        android:id="@+id/tvDescription"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="오늘 저녁! ...레시피 확인하기"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvLikeCount" />
+
+    <!-- 레시피 확인하기 버튼 -->
+    <TextView
+        android:id="@+id/tvRecipeButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="레시피 확인하기"
+        android:textColor="@android:color/holo_blue_dark"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvDescription" />
+
+    <!-- 구분선 -->
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvRecipeButton" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

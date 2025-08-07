@@ -10,35 +10,43 @@
         android:id="@+id/my_message_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="end"
+        android:orientation="horizontal"
         android:visibility="gone">
 
         <TextView
             android:id="@+id/my_timestamp_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:textColor="#999999"
             android:layout_gravity="bottom"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="8dp"
+            android:textColor="#999999"
+            android:textSize="10sp" />
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/my_message_background"
-            android:padding="12dp"
             android:layout_marginStart="60dp"
-            android:maxWidth="250dp">
+            android:background="@drawable/my_message_background"
+            android:maxWidth="250dp"
+            android:orientation="vertical"
+            android:padding="12dp">
 
             <TextView
                 android:id="@+id/my_content_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
+                android:lineSpacingExtra="2dp"
                 android:textColor="#FFFFFF"
-                android:lineSpacingExtra="2dp" />
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/my_image_view"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="4dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -49,35 +57,43 @@
         android:id="@+id/other_message_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:gravity="start"
+        android:orientation="horizontal"
         android:visibility="gone">
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/other_message_background"
-            android:padding="12dp"
             android:layout_marginEnd="60dp"
-            android:maxWidth="250dp">
+            android:background="@drawable/other_message_background"
+            android:maxWidth="250dp"
+            android:orientation="vertical"
+            android:padding="12dp">
 
             <TextView
                 android:id="@+id/sender_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="12sp"
+                android:layout_marginBottom="4dp"
                 android:textColor="#666666"
-                android:layout_marginBottom="4dp" />
+                android:textSize="12sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/content_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="14sp"
+                android:lineSpacingExtra="2dp"
                 android:textColor="#333333"
-                android:lineSpacingExtra="2dp" />
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/other_image_view"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_marginTop="4dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
 
         </LinearLayout>
 
@@ -85,10 +101,10 @@
             android:id="@+id/timestamp_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="10sp"
-            android:textColor="#999999"
             android:layout_gravity="bottom"
-            android:layout_marginStart="8dp" />
+            android:layout_marginStart="8dp"
+            android:textColor="#999999"
+            android:textSize="10sp" />
 
     </LinearLayout>
 

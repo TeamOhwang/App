@@ -1,9 +1,10 @@
+package com.example.project
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.project.R
 
 // 배너 이미지를 표시할 RecyclerView 어댑터
 // 생성자로 배너로 사용할 이미지 리소스 ID 목록을 받습니다.

@@ -15,7 +15,7 @@ class MyPage : AppCompatActivity() {
     private lateinit var postCountTextView: TextView
     private lateinit var bookmarkCountTextView: TextView
     private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: PostAdapter
+    private lateinit var adapter: MyPagePostAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,7 +28,7 @@ class MyPage : AppCompatActivity() {
         recyclerView = findViewById<RecyclerView>(R.id.postlist)
 
         recyclerView.layoutManager = GridLayoutManager(this, 3)
-        adapter = PostAdapter()
+        adapter = MyPagePostAdapter()
         recyclerView.adapter = adapter
 
         fetchProfileAndPosts()
@@ -52,14 +52,14 @@ class MyPage : AppCompatActivity() {
             .placeholder(R.drawable.userlogo) // 기본이미지
             .into(profileImageView)
 
-        // 게시물 더미 데이터 생성
+        // 게시물 더미 데이터 생성 (MyPage용 간단한 구조)
         val dummyPosts = listOf(
-            Post(1, "https://picsum.photos/id/1011/200/200"),
-            Post(2, "https://picsum.photos/id/1012/200/200"),
-            Post(3, "https://picsum.photos/id/1013/200/200"),
-            Post(4, "https://picsum.photos/id/1015/200/200"),
-            Post(5, "https://picsum.photos/id/1016/200/200"),
-            Post(6, "https://picsum.photos/id/1020/200/200")
+            MyPagePost(1, R.drawable.img_salad),
+            MyPagePost(2, R.drawable.img_salad),
+            MyPagePost(3, R.drawable.img_salad),
+            MyPagePost(4, R.drawable.img_salad),
+            MyPagePost(5, R.drawable.img_salad),
+            MyPagePost(6, R.drawable.img_salad)
         )
         adapter.submitList(dummyPosts)
     }

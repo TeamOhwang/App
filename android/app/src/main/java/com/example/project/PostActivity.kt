@@ -5,7 +5,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import BannerAdapter
+import com.example.project.BannerAdapter
 import android.view.View
 import android.widget.TextView
 import androidx.core.widget.NestedScrollView
@@ -22,7 +22,7 @@ class PostActivity : AppCompatActivity() {
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<NestedScrollView>
     private lateinit var bottomSheet: NestedScrollView
     private lateinit var commentHeader: TextView
-    private lateinit var postAdapter: PostAdapter
+    private lateinit var postAdapter: PostDetailAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,7 +100,7 @@ class PostActivity : AppCompatActivity() {
             // 다른 게시글 추가 가능
         )
 
-        postAdapter = PostAdapter(
+        postAdapter = PostDetailAdapter(
             posts,
             onRecipeClick = { post -> // '레시피 확인하기' 클릭 시
                 showBottomSheet(post)

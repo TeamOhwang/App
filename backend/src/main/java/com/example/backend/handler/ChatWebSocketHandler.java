@@ -29,7 +29,7 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         
         // 연결 성공 메시지 전송 (시스템 메시지는 DB에 저장하지 않음)
         ChatMessageDto welcomeMessage = new ChatMessageDto("System", "채팅방에 연결되었습니다.", 
-                                                    java.time.LocalDateTime.now().toString());
+                                                    java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")));
         session.sendMessage(new TextMessage(objectMapper.writeValueAsString(welcomeMessage)));
     }
 
@@ -43,14 +43,25 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             ChatMessageDto messageDto = objectMapper.readValue(payload, ChatMessageDto.class);
             
             // DB에 메시지 저장
-            ChatMessage chatMessage = ChatMessage.create(messageDto.getSender(), messageDto.getContent());
+            ChatMessage chatMessage;
+            if ("image".equals(messageDto.getMessageType())) {
+                chatMessage = ChatMessage.createImageMessage(
+                    messageDto.getSender(), 
+                    messageDto.getContent(), 
+                    messageDto.getImageUrl()
+                );
+            } else {
+                chatMessage = ChatMessage.create(messageDto.getSender(), messageDto.getContent());
+            }
             chatMessageRepository.save(chatMessage);
             
             // 저장된 메시지를 기반으로 응답 생성
             ChatMessageDto responseDto = new ChatMessageDto(
                 chatMessage.getSender(), 
                 chatMessage.getContent(), 
-                chatMessage.getTimestamp().toString()
+                chatMessage.getTimestamp().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")),
+                chatMessage.getMessageType(),
+                chatMessage.getImageUrl()
             );
             String responsePayload = objectMapper.writeValueAsString(responseDto);
 
@@ -98,6 +109,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         private String sender;
         private String content;
         private String timestamp;
+        private String messageType = "text";
+        private String imageUrl;
 
         public ChatMessageDto() {}
 
@@ -105,6 +118,15 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             this.sender = sender;
             this.content = content;
             this.timestamp = timestamp;
+            this.messageType = "text";
+        }
+        
+        public ChatMessageDto(String sender, String content, String timestamp, String messageType, String imageUrl) {
+            this.sender = sender;
+            this.content = content;
+            this.timestamp = timestamp;
+            this.messageType = messageType;
+            this.imageUrl = imageUrl;
         }
 
         // Getters and Setters
@@ -114,5 +136,9 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
         public void setContent(String content) { this.content = content; }
         public String getTimestamp() { return timestamp; }
         public void setTimestamp(String timestamp) { this.timestamp = timestamp; }
+        public String getMessageType() { return messageType; }
+        public void setMessageType(String messageType) { this.messageType = messageType; }
+        public String getImageUrl() { return imageUrl; }
+        public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
     }
 }

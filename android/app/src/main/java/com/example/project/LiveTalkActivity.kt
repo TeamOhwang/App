@@ -1,10 +1,23 @@
 package com.example.project
 
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log // Log import 추가
+import android.view.KeyEvent
+import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.project.util.SessionManager
@@ -25,6 +38,7 @@ class LiveTalkActivity : AppCompatActivity() {
     private lateinit var messageRecyclerView: RecyclerView
     private lateinit var messageEditText: EditText
     private lateinit var sendButton: Button
+    private lateinit var imageButton: ImageButton
     private lateinit var messageAdapter: MessageAdapter
     private val messages = mutableListOf<Message>()
     private val gson = Gson()
@@ -34,6 +48,28 @@ class LiveTalkActivity : AppCompatActivity() {
 
     // 안드로이드 에뮬레이터에서 로컬 스프링 서버에 접속할 주소
     private lateinit var serverUrl: String
+    
+    // 이미지 선택을 위한 ActivityResultLauncher
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.data?.let { uri ->
+                handleSelectedImage(uri)
+            }
+        }
+    }
+    
+    // 권한 요청을 위한 ActivityResultLauncher
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            openImagePicker()
+        } else {
+            Toast.makeText(this, "갤러리 접근 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,6 +91,7 @@ class LiveTalkActivity : AppCompatActivity() {
         messageRecyclerView = findViewById(R.id.message_recycler_view)
         messageEditText = findViewById(R.id.message_edit_text)
         sendButton = findViewById(R.id.send_button)
+        imageButton = findViewById(R.id.image_button)
 
         // 뒤로가기 버튼 설정
         findViewById<android.widget.ImageButton>(R.id.back_button).setOnClickListener {
@@ -73,12 +110,37 @@ class LiveTalkActivity : AppCompatActivity() {
         getCurrentUserInfo()
 
         sendButton.setOnClickListener {
-            val messageContent = messageEditText.text.toString()
-            if (messageContent.isNotEmpty()) {
-                val message = Message(currentUserNickname, messageContent, Date().toString())
-                sendMessage(message)
-                messageEditText.text.clear()
+            sendTextMessage()
+        }
+        
+        // Enter 키로 메시지 전송 - EditorActionListener
+        messageEditText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEND) {
+                sendTextMessage()
+                true
+            } else {
+                false
             }
+        }
+        
+        // 하드웨어 키보드 Enter 키 처리
+        messageEditText.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER) {
+                when (event.action) {
+                    KeyEvent.ACTION_DOWN -> {
+                        // Enter 키를 눌렀을 때 메시지 전송
+                        sendTextMessage()
+                        true
+                    }
+                    else -> false
+                }
+            } else {
+                false
+            }
+        }
+        
+        imageButton.setOnClickListener {
+            checkPermissionAndOpenGallery()
         }
     }
 
@@ -104,11 +166,17 @@ class LiveTalkActivity : AppCompatActivity() {
                             return@runOnUiThread
                         }
                         
-                        // 중복 메시지 방지 (내용, 발신자, 시간으로 비교)
-                        val isDuplicate = messages.any { 
-                            it.content == receivedMessage.content && 
-                            it.sender == receivedMessage.sender &&
-                            it.timestamp == receivedMessage.timestamp 
+                        // 중복 메시지 방지 (내용, 발신자, 시간, 메시지 타입으로 비교)
+                        val isDuplicate = messages.any { existingMessage ->
+                            existingMessage.content == receivedMessage.content && 
+                            existingMessage.sender == receivedMessage.sender &&
+                            existingMessage.messageType == receivedMessage.messageType &&
+                            // 이미지 메시지의 경우 imageUrl도 비교
+                            if (receivedMessage.messageType == "image") {
+                                existingMessage.imageUrl == receivedMessage.imageUrl
+                            } else {
+                                existingMessage.timestamp == receivedMessage.timestamp
+                            }
                         }
                         
                         if (!isDuplicate) {
@@ -157,6 +225,15 @@ class LiveTalkActivity : AppCompatActivity() {
         webSocket = client.newWebSocket(request, listener)
     }
 
+    private fun sendTextMessage() {
+        val messageContent = messageEditText.text.toString().trim()
+        if (messageContent.isNotEmpty()) {
+            val message = Message(currentUserNickname, messageContent, Date().toString())
+            sendMessage(message)
+            messageEditText.text.clear()
+        }
+    }
+    
     private fun sendMessage(message: Message) {
         if (isWebSocketConnected) {
             val jsonMessage = gson.toJson(message)
@@ -204,10 +281,15 @@ class LiveTalkActivity : AppCompatActivity() {
                                     val content = jsonObject.getString("content")
                                     // 시스템 연결 메시지 필터링
                                     if (content != "채팅방에 연결되었습니다.") {
+                                        val messageType = jsonObject.optString("messageType", "text")
+                                        val imageUrl = jsonObject.optString("imageUrl", null)
+                                        
                                         val message = Message(
                                             jsonObject.getString("sender"),
                                             content,
-                                            jsonObject.getString("timestamp")
+                                            jsonObject.getString("timestamp"),
+                                            messageType,
+                                            imageUrl
                                         )
                                         messages.add(message)
                                     }
@@ -275,6 +357,46 @@ class LiveTalkActivity : AppCompatActivity() {
         client = OkHttpClient()
         loadChatHistory() // 채팅 히스토리 먼저 로드
         connectWebSocket()
+    }
+
+    private fun checkPermissionAndOpenGallery() {
+        when {
+            ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                openImagePicker()
+            }
+            else -> {
+                permissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        }
+    }
+    
+    private fun openImagePicker() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        intent.type = "image/*"
+        imagePickerLauncher.launch(intent)
+    }
+    
+    private fun handleSelectedImage(uri: Uri) {
+        try {
+            // 이미지 URI를 문자열로 변환하여 메시지로 전송
+            val imageMessage = Message(
+                sender = currentUserNickname,
+                content = "[이미지]",
+                timestamp = Date().toString(),
+                messageType = "image",
+                imageUrl = uri.toString()
+            )
+            
+            // 서버로만 전송 (WebSocket으로 받아서 표시하므로 로컬 추가 제거)
+            sendMessage(imageMessage)
+            
+        } catch (e: Exception) {
+            Log.e("LiveTalkActivity", "이미지 처리 오류: ${e.message}", e)
+            Toast.makeText(this, "이미지를 처리할 수 없습니다.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onDestroy() {

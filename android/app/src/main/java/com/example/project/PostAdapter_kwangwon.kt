@@ -8,10 +8,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class PostAdapter_kwangwon(
-    private val posts: List<Post>,
-    private val onRecipeClick: (Post) -> Unit,
-    private val onCommentClick: (Post) -> Unit
-) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
+    private val posts: List<Post_kwangwon>,
+    private val onRecipeClick: (Post_kwangwon) -> Unit,
+    private val onCommentClick: (Post_kwangwon) -> Unit
+) : RecyclerView.Adapter<PostAdapter_kwangwon.PostViewHolder>() {
 
     // ViewHolder: item_post.xml의 뷰들을 멤버 변수로 가집니다.
     inner class PostViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -24,7 +24,7 @@ class PostAdapter_kwangwon(
         val tvPostContent: TextView = view.findViewById(R.id.tvPostContent)
 
         // 데이터를 뷰에 바인딩하는 함수
-        fun bind(post: Post) {
+        fun bind(post: Post_kwangwon) {
             ivProfile.setImageResource(post.profileImageRes)
             tvUsername.text = post.username
             ivPostImage.setImageResource(post.postImageRes)
@@ -48,7 +48,7 @@ class PostAdapter_kwangwon(
             }
         }
 
-        private fun updateLikeButton(post: Post) {
+        private fun updateLikeButton(post: Post_kwangwon) {
             if (post.isLiked) {
                 ivLike.setImageResource(R.drawable.ic_heart_filled) // 꽉 찬 하트
             } else {
@@ -60,7 +60,7 @@ class PostAdapter_kwangwon(
     // ViewHolder를 생성하고 레이아웃을 인플레이트합니다.
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_post, parent, false)
+            .inflate(R.layout.item_post_kwangwon, parent, false)
         return PostViewHolder(view)
     }
 
