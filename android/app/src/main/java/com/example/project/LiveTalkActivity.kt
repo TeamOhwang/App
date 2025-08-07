@@ -39,13 +39,15 @@ class LiveTalkActivity : AppCompatActivity() {
         // 서버 URL 동적 설정
         val port = getString(R.string.server_port)
         val serverIp = getString(R.string.server_ip)
-        val baseIp = if (serverIp == "auto") "10.0.2.2" else serverIp
-        // 일반적인 WebSocket 엔드포인트들을 시도
-        // 백엔드 설정에 따라 다음 중 하나를 사용:
-        // serverUrl = "ws://$baseIp:$port/ws"
-        // serverUrl = "ws://$baseIp:$port/websocket"
-        // serverUrl = "ws://$baseIp:$port/chat"
+        val baseIp = if (serverIp == "auto") {
+            // 에뮬레이터에서 로컬 서버 접속용
+            "10.0.2.2"
+        } else {
+            // 실제 서버 IP 주소 사용
+            serverIp
+        }
         serverUrl = "ws://$baseIp:$port/ws"
+        Log.i("LiveTalkActivity", "서버 연결 URL: $serverUrl")
 
         messageRecyclerView = findViewById(R.id.message_recycler_view)
         messageEditText = findViewById(R.id.message_edit_text)
@@ -168,8 +170,13 @@ class LiveTalkActivity : AppCompatActivity() {
             try {
                 val port = getString(R.string.server_port)
                 val serverIp = getString(R.string.server_ip)
-                val baseIp = if (serverIp == "auto") "10.0.2.2" else serverIp
+                val baseIp = if (serverIp == "auto") {
+                    "10.0.2.2"
+                } else {
+                    serverIp
+                }
                 val url = URL("http://$baseIp:$port/api/chat/history")
+                Log.i("LiveTalkActivity", "채팅 히스토리 요청 URL: $url")
                 val connection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
                 connection.connectTimeout = 5000
