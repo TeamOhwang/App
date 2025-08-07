@@ -71,7 +71,6 @@ class LoginActivity : AppCompatActivity() {
     private fun startAnonymousMode() {
         sessionManager.setAnonymousMode(true)
         Log.d("LoginActivity", "익명 모드로 MainActivity 이동")
-        Toast.makeText(this, "익명으로 둘러보기를 시작합니다", Toast.LENGTH_SHORT).show()
         moveToMainActivityForAnonymous()
     }
 
