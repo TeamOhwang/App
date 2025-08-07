@@ -17,6 +17,9 @@ class SessionManager private constructor(private val context: Context) {
     // 간단한 쿠키 저장소
     private val cookieStore = mutableListOf<Cookie>()
 
+    // 익명 모드 플래그 추가
+    private var isAnonymousMode = false
+
     // 커스텀 CookieJar
     private val cookieJar = object : CookieJar {
         override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
@@ -55,9 +58,27 @@ class SessionManager private constructor(private val context: Context) {
         }
     }
 
-    // 소셜 로그인 (새로 추가)
+    // 익명 모드 설정
+    fun setAnonymousMode(anonymous: Boolean) {
+        isAnonymousMode = anonymous
+        if (anonymous) {
+            Log.d("SessionManager", "익명 모드로 설정됨")
+        } else {
+            Log.d("SessionManager", "익명 모드 해제됨")
+        }
+    }
+
+    // 익명 모드 확인
+    fun isAnonymousMode(): Boolean {
+        return isAnonymousMode
+    }
+
+    // 소셜 로그인
     fun socialLogin(uid: String, email: String, name: String, photoUrl: String,
                     callback: (Boolean, String) -> Unit) {
+        // 익명 모드 해제
+        setAnonymousMode(false)
+
         Thread {
             try {
                 val json = JSONObject().apply {
@@ -98,8 +119,22 @@ class SessionManager private constructor(private val context: Context) {
         }.start()
     }
 
-    // 현재 로그인된 사용자 정보 조회
+    // 현재 로그인된 사용자 정보 조회 (수정)
     fun getCurrentUser(callback: (Boolean, String?, Map<String, Any>?) -> Unit) {
+        // 익명 모드인 경우 익명 사용자 정보 반환
+        if (isAnonymousMode) {
+            val anonymousUserInfo = mapOf(
+                "userId" to -1L,
+                "email" to "anonymous@example.com",
+                "nickname" to "익명 사용자",
+                "profileImage" to "",
+                "accountCode" to "anonymous"
+            )
+            Log.d("SessionManager", "익명 모드 - 익명 사용자 정보 반환")
+            callback(true, null, anonymousUserInfo)
+            return
+        }
+
         Thread {
             try {
                 val request = Request.Builder()
@@ -137,8 +172,15 @@ class SessionManager private constructor(private val context: Context) {
         }.start()
     }
 
-    // 세션 유효성 확인
+    // 세션 유효성 확인 (수정)
     fun checkSession(callback: (Boolean) -> Unit) {
+        // 익명 모드인 경우 true 반환
+        if (isAnonymousMode) {
+            Log.d("SessionManager", "익명 모드 - 세션 유효함으로 처리")
+            callback(true)
+            return
+        }
+
         Thread {
             try {
                 val request = Request.Builder()
@@ -165,8 +207,16 @@ class SessionManager private constructor(private val context: Context) {
         }.start()
     }
 
-    // 로그아웃
+    // 로그아웃 (수정)
     fun logout(callback: (Boolean, String) -> Unit) {
+        // 익명 모드인 경우 플래그만 해제
+        if (isAnonymousMode) {
+            setAnonymousMode(false)
+            Log.d("SessionManager", "익명 모드 해제")
+            callback(true, "로그아웃 완료")
+            return
+        }
+
         Thread {
             try {
                 val request = Request.Builder()

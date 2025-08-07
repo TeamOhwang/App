@@ -35,7 +35,7 @@ class LoginActivity : AppCompatActivity() {
         // Firebase Auth 초기화
         auth = FirebaseAuth.getInstance()
 
-        // Google 로그인 옵션 (임시 비활성화)
+        // Google 로그인 옵션
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -46,23 +46,33 @@ class LoginActivity : AppCompatActivity() {
         findViewById<ImageView>(R.id.btnGoogleLogin).setOnClickListener {
             signIn()
         }
-        findViewById<Button>(R.id.btnAnonymousStart).setOnClickListener{
-            moveToMainActivity()
+
+        // 익명 로그인 버튼 처리 수정
+        findViewById<Button>(R.id.btnAnonymousStart).setOnClickListener {
+            startAnonymousMode()
         }
     }
 
     private fun checkExistingSession() {
         sessionManager.checkSession { isValid ->
             if (isValid) {
-                // 이미 로그인된 상태 - MainActivity로 이동
+                // 이미 로그인된 상태 (일반 로그인 또는 익명 모드) - MainActivity로 이동
                 runOnUiThread {
                     Log.d("LoginActivity", "기존 세션 발견 - MainActivity로 이동")
-                    moveToLogoutActivity()
+                    moveToMainActivity()
                 }
             } else {
                 Log.d("LoginActivity", "세션 없음 - 로그인 화면 표시")
             }
         }
+    }
+
+    // 익명 모드 시작
+    private fun startAnonymousMode() {
+        sessionManager.setAnonymousMode(true)
+        Log.d("LoginActivity", "익명 모드로 MainActivity 이동")
+        Toast.makeText(this, "익명으로 둘러보기를 시작합니다", Toast.LENGTH_SHORT).show()
+        moveToMainActivityForAnonymous()
     }
 
     private fun signIn() {
@@ -103,6 +113,7 @@ class LoginActivity : AppCompatActivity() {
                     Log.i("GoogleUser", "profileImage: $photoUrl")
 
                     // SessionManager를 통해 서버로 사용자 정보 전송
+                    // socialLogin 메소드에서 자동으로 익명 모드가 해제됩니다
                     sendUserDataToServer(uid, email, name, photoUrl)
 
                 } else {
@@ -128,16 +139,17 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun moveToLogoutActivity() {
+    private fun moveToMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
         finish()
     }
 
-    private fun moveToMainActivity() {
+    // 익명 모드용 MainActivity 이동 (플래그 없음)
+    private fun moveToMainActivityForAnonymous() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
-        finish()
+        // finish()를 호출하지 않음 - 뒤로가기로 로그인 화면 복귀 가능
     }
 }
