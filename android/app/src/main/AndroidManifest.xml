@@ -15,19 +15,20 @@
         android:theme="@style/Theme.Hackathon"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".SplashActivity"
+            android:exported="false" />
+        <activity
             android:name=".MyPage"
             android:exported="false" />
         <activity
-            android:name="com.example.project.LogoutActivity"
-            android:exported="false" />
-
-        <activity
-            android:name="com.example.project.MainActivity"
+            android:name=".LogoutActivity"
             android:exported="false" />
         <activity
-            android:name="com.example.project.LoginActivity"
+            android:name=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".LoginActivity"
             android:exported="true">
-
 
             <!-- 앱 시작점 -->
             <intent-filter>
@@ -37,7 +38,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.project.LiveTalkActivity"
+            android:name=".LiveTalkActivity"
             android:exported="false" />
     </application>
 
