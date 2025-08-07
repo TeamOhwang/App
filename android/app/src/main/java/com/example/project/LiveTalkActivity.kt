@@ -27,6 +27,7 @@ class LiveTalkActivity : AppCompatActivity() {
     private lateinit var messageAdapter: MessageAdapter
     private val messages = mutableListOf<Message>()
     private val gson = Gson()
+    private var isWebSocketConnected = false
 
     // 안드로이드 에뮬레이터에서 로컬 스프링 서버에 접속할 주소
     private lateinit var serverUrl: String
@@ -59,6 +60,9 @@ class LiveTalkActivity : AppCompatActivity() {
         messageRecyclerView.layoutManager = LinearLayoutManager(this)
         messageRecyclerView.adapter = messageAdapter
 
+        // 초기 상태에서 전송 버튼 비활성화
+        sendButton.isEnabled = false
+
         client = OkHttpClient()
         loadChatHistory() // 채팅 히스토리 먼저 로드
         connectWebSocket()
@@ -78,15 +82,35 @@ class LiveTalkActivity : AppCompatActivity() {
         val listener = object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
                 Log.i("LiveTalkActivity", "WebSocket 연결 성공")
+                isWebSocketConnected = true
+                runOnUiThread {
+                    sendButton.isEnabled = true
+                }
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
+                Log.d("LiveTalkActivity", "WebSocket 메시지 수신: $text")
                 try {
                     val receivedMessage = gson.fromJson(text, Message::class.java)
                     runOnUiThread {
-                        messages.add(receivedMessage)
-                        messageAdapter.notifyItemInserted(messages.size - 1)
-                        messageRecyclerView.scrollToPosition(messages.size - 1)
+                        // 중복 메시지 방지 (시스템 메시지 제외)
+                        if (receivedMessage.sender != "System" || receivedMessage.content == "채팅방에 연결되었습니다.") {
+                            // 이미 존재하는 메시지인지 확인 (내용과 시간으로 비교)
+                            val isDuplicate = messages.any { 
+                                it.content == receivedMessage.content && 
+                                it.sender == receivedMessage.sender &&
+                                it.timestamp == receivedMessage.timestamp 
+                            }
+                            
+                            if (!isDuplicate) {
+                                messages.add(receivedMessage)
+                                messageAdapter.notifyItemInserted(messages.size - 1)
+                                messageRecyclerView.scrollToPosition(messages.size - 1)
+                                Log.d("LiveTalkActivity", "새 메시지 추가: ${receivedMessage.content}")
+                            } else {
+                                Log.d("LiveTalkActivity", "중복 메시지 무시: ${receivedMessage.content}")
+                            }
+                        }
                     }
                 } catch (e: Exception) {
                     Log.e("LiveTalkActivity", "WebSocket 메시지 파싱 오류: ${e.message}", e)
@@ -99,11 +123,17 @@ class LiveTalkActivity : AppCompatActivity() {
 
             override fun onClosing(webSocket: WebSocket, code: Int, reason: String) {
                 Log.i("LiveTalkActivity", "WebSocket 연결 종료 중: Code $code, Reason: $reason")
+                isWebSocketConnected = false
+                runOnUiThread {
+                    sendButton.isEnabled = false
+                }
                 webSocket.close(1000, null)
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
+                isWebSocketConnected = false
                 runOnUiThread {
+                    sendButton.isEnabled = false
                     val errorMsg = if (response != null) {
                         "연결 실패: HTTP ${response.code} - ${t.message}"
                     } else {
@@ -120,8 +150,17 @@ class LiveTalkActivity : AppCompatActivity() {
     }
 
     private fun sendMessage(message: Message) {
-        val jsonMessage = gson.toJson(message)
-        webSocket.send(jsonMessage)
+        if (isWebSocketConnected) {
+            val jsonMessage = gson.toJson(message)
+            Log.d("LiveTalkActivity", "메시지 전송: $jsonMessage")
+            webSocket.send(jsonMessage)
+        } else {
+            Log.w("LiveTalkActivity", "WebSocket 연결되지 않음 - 메시지 전송 실패")
+            runOnUiThread {
+                messages.add(Message("System", "연결이 끊어져 메시지를 전송할 수 없습니다.", Date().toString()))
+                messageAdapter.notifyItemInserted(messages.size - 1)
+            }
+        }
     }
 
     private fun loadChatHistory() {
@@ -197,7 +236,10 @@ class LiveTalkActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        webSocket.close(1000, null)
+        if (isWebSocketConnected) {
+            webSocket.close(1000, "Activity destroyed")
+        }
+        client.dispatcher.executorService.shutdown()
         super.onDestroy()
     }
 }

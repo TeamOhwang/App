@@ -1,5 +1,6 @@
 package com.example.backend.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
@@ -11,15 +12,13 @@ import com.example.backend.handler.ChatWebSocketHandler;
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private final ChatWebSocketHandler chatWebSocketHandler;
-
-    public WebSocketConfig(ChatWebSocketHandler chatWebSocketHandler) {
-        this.chatWebSocketHandler = chatWebSocketHandler;
-    }
+    @Autowired
+    private ChatWebSocketHandler chatWebSocketHandler;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        // WebSocket 엔드포인트 등록 및 CORS 설정
         registry.addHandler(chatWebSocketHandler, "/ws")
-                .setAllowedOrigins("*"); // 개발 환경에서만 사용, 프로덕션에서는 특정 도메인 지정
+                .setAllowedOrigins("*"); // 개발 환경에서는 모든 origin 허용
     }
 }
