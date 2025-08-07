@@ -48,8 +48,8 @@ public class PostController {
     }
     
     // 게시글 단건 조회
-    @GetMapping("/post")
-    public ResponseEntity<Post> getPostById(@RequestParam Long postId) {
+    @GetMapping("/post/{postId}")
+    public ResponseEntity<Post> getPostById(@PathVariable Long postId) {
           Post posts  = postService.getPostById(postId);
           return ResponseEntity.ok(posts);
     }
