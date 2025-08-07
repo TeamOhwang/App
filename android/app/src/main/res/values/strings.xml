@@ -7,7 +7,11 @@
     <!-- 개발자 가이드:
          - 에뮬레이터 사용시: 자동으로 10.0.2.2 사용
          - 실제 기기 사용시: 컴퓨터와 같은 WiFi에 연결 후 컴퓨터 IP로 변경 필요
+         - 다른 PC에서 접속시: 서버 PC의 실제 IP 주소 입력
          - 예: <string name="server_ip">192.168.1.100</string>
     -->
-    <string name="server_ip">auto</string>
+    <!-- TODO: 서버 PC의 실제 IP 주소로 변경하세요 -->
+    <string name="server_ip">192.168.219.180</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

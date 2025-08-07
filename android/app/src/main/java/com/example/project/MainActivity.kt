@@ -1,5 +1,6 @@
 package com.example.project
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +9,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 
 class MainActivity : AppCompatActivity() {
+    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
@@ -30,6 +32,17 @@ class MainActivity : AppCompatActivity() {
                 }
             }
             Log.d("MainActivity", "onCreate 완료")
+
+            val mypagebtn = findViewById<Button>(R.id.mypagebtn)
+
+            mypagebtn.setOnClickListener{
+                try {
+                    val intent = Intent(this, MyPage::class.java)
+                    startActivity(intent)
+                } catch (e : Exception) {
+                    Toast.makeText(this, "오류: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
         } catch (e: Exception) {
             Log.e("MainActivity", "onCreate 오류", e)
             Toast.makeText(this, "앱 시작 오류: ${e.message}", Toast.LENGTH_LONG).show()
