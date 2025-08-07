@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.entity.UserLoginResponseDto;
 import com.example.backend.entity.Users;
 import com.example.backend.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 @CrossOrigin(origins = "*")
 public class UserController {
 
@@ -27,7 +28,7 @@ public class UserController {
 	}
 
 	// 특정 사용자 조회
-	@GetMapping("/{id}")
+	@GetMapping("/users/{id}")
 	public ResponseEntity<Users> getUserById(@PathVariable Long id) {
 		Optional<Users> user = userRepository.findById(id);
 		if (user.isPresent()) {
@@ -48,7 +49,7 @@ public class UserController {
 	}
 
 	// 테스트용 사용자 생성
-	@PostMapping("/test")
+	@PostMapping("/users/test")
 	public ResponseEntity<String> createTestUser() {
 		try {
 			Users testUser = Users.builder()
@@ -64,7 +65,7 @@ public class UserController {
 	}
 
 	// DB 연결 테스트
-	@GetMapping("/test")
+	@GetMapping("/users/test")
 	public ResponseEntity<String> testDatabase() {
 		try {
 			long count = userRepository.count();
@@ -75,7 +76,7 @@ public class UserController {
 	}
 
 	// 소셜 로그인 (Google)
-	@PostMapping("/social-login")
+	@PostMapping("/users/social-login")
 	public ResponseEntity<Map<String, Object>> socialLogin(@RequestBody Map<String, String> loginData,
 			HttpSession session) {
 		Map<String, Object> response = new HashMap<>();
@@ -113,10 +114,11 @@ public class UserController {
 			session.setAttribute("userId", user.getId());
 			session.setAttribute("userEmail", user.getEmail());
 			session.setAttribute("userNickname", user.getNickname());
+			session.setAttribute("loginUser", user); 
 
 			response.put("success", true);
 			response.put("message", "로그인 성공");
-			response.put("userId", user.getId());
+			response.put("userId", new UserLoginResponseDto(user).getId());
 
 			return ResponseEntity.ok(response);
 
@@ -128,7 +130,7 @@ public class UserController {
 	}
 
 	// 현재 로그인된 사용자 정보 조회
-	@GetMapping("/current")
+	@GetMapping("/users/current")
 	public ResponseEntity<Map<String, Object>> getCurrentUser(HttpSession session) {
 		Map<String, Object> response = new HashMap<>();
 
@@ -166,7 +168,7 @@ public class UserController {
 	}
 
 	// 세션 유효성 확인
-	@GetMapping("/check-session")
+	@GetMapping("/users/check-session")
 	public ResponseEntity<Map<String, Object>> checkSession(HttpSession session) {
 		Map<String, Object> response = new HashMap<>();
 
@@ -184,7 +186,7 @@ public class UserController {
 	}
 
 	// 로그아웃
-	@PostMapping("/logout")
+	@PostMapping("/users/logout")
 	public ResponseEntity<Map<String, Object>> logout(HttpSession session) {
 		Map<String, Object> response = new HashMap<>();
 

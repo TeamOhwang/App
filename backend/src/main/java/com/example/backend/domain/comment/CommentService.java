@@ -52,9 +52,12 @@ public class CommentService {
     // 게시글의 댓글 및 대댓글 조회
     @Transactional(readOnly = true)
     public List<Comment> getCommentsByPost(Long postId) {
-        return commentRepository.findByPostIdAndParentIsNull(postId);
-    }
+        List<Comment> comments = commentRepository.findByPostIdAndParentIsNull(postId);
 
+        comments.forEach(c -> c.getChildren().size());
+
+        return comments;
+    }
 
 }
 
