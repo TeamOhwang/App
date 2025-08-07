@@ -15,8 +15,12 @@
         android:theme="@style/Theme.Hackathon"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".PostActivity"
+            android:exported="false" />
+        <activity
             android:name=".SplashActivity"
             android:exported="true">
+
             <!-- 앱 시작점을 SplashActivity로 변경 -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -17,4 +17,6 @@
     <!-- <string name="server_ip">auto</string> -->
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="banner_image_description">배너 이미지</string>
 </resources>

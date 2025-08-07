@@ -13,3 +13,4 @@
         tools:srcCompat="@tools:sample/avatars"
         android:contentDescription="게시물 이미지"/>
 </FrameLayout>
+
