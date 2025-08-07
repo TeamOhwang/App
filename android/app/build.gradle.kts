@@ -90,11 +90,15 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     implementation(libs.androidx.legacy.support.v4)
     implementation(libs.androidx.recyclerview)
-
+    // Volley 네트워킹 라이브러리
+    implementation("com.android.volley:volley:1.2.1")
+// Glide 이미지 로딩 라이브러리 (서버에서 이미지 URL 받을 때 필요)
+    implementation("com.github.bumptech.glide:glide:4.16.0")
     // glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
+
 
     // 테스트 의존성
     testImplementation(libs.junit)
