@@ -35,7 +35,7 @@ class LogoutActivity : AppCompatActivity() {
     private fun initViews() {
         tvWelcome = findViewById(R.id.tvWelcome)
         tvUserEmail = findViewById(R.id.tvUserEmail)
-        btnLogout = findViewById(R.id.btnLogout)
+        btnLogout = findViewById(R.id.btnLogouttest)
 
         // 초기 상태 설정
         tvWelcome.text = "사용자 정보를 불러오는 중..."

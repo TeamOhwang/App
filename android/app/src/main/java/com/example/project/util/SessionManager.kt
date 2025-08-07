@@ -1,7 +1,6 @@
 package com.example.project.util
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.util.Log
 import com.example.project.R
 import okhttp3.Cookie
@@ -16,49 +15,20 @@ import org.json.JSONObject
 
 class SessionManager private constructor(private val context: Context) {
 
-    // SharedPreferences를 사용한 영구 쿠키 저장
-    private val sharedPreferences: SharedPreferences =
-        context.getSharedPreferences("session_cookies", Context.MODE_PRIVATE)
+    // 간단한 쿠키 저장소
+    private val cookieStore = mutableListOf<Cookie>()
 
-    // 메모리 쿠키 저장소 (중복 방지를 위한 Map 사용)
-    private val cookieStore = mutableMapOf<String, Cookie>()
-
-    // 익명 모드 플래그
+    // 익명 모드 플래그 추가
     private var isAnonymousMode = false
 
-    init {
-        // 앱 시작 시 저장된 쿠키 복원
-        loadCookiesFromStorage()
-    }
-
-    // 커스텀 CookieJar (개선됨)
+    // 커스텀 CookieJar
     private val cookieJar = object : CookieJar {
         override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-            cookies.forEach { cookie ->
-                val key = "${cookie.name}_${cookie.domain}"
-                val oldCookie = cookieStore[key]
-
-                // 기존 쿠키와 비교하여 변경사항 로깅
-                if (oldCookie?.value != cookie.value) {
-                    Log.d("SessionManager", "쿠키 업데이트: ${cookie.name} = ${cookie.value} (이전: ${oldCookie?.value})")
-                }
-
-                cookieStore[key] = cookie
-            }
-            saveCookiesToStorage()
+            cookieStore.addAll(cookies)
         }
 
         override fun loadForRequest(url: HttpUrl): List<Cookie> {
-            val validCookies = cookieStore.values.filter { cookie ->
-                cookie.matches(url) && !cookie.expiresAt.let { it > 0 && it < System.currentTimeMillis() }
-            }
-
-            Log.d("SessionManager", "URL $url 에 대한 쿠키 ${validCookies.size}개 로드")
-            validCookies.forEach { cookie ->
-                Log.d("SessionManager", "  - ${cookie.name} = ${cookie.value}")
-            }
-
-            return validCookies
+            return cookieStore.filter { it.matches(url) }
         }
     }
 
@@ -89,53 +59,9 @@ class SessionManager private constructor(private val context: Context) {
         }
     }
 
-    // ==================== 쿠키 저장/복원 메소드 ====================
-
-    private fun saveCookiesToStorage() {
-        val editor = sharedPreferences.edit()
-        cookieStore.forEach { (key, cookie) ->
-            val cookieString = "${cookie.name}|${cookie.value}|${cookie.domain}|${cookie.path}|${cookie.expiresAt}|${cookie.secure}|${cookie.httpOnly}"
-            editor.putString(key, cookieString)
-        }
-        editor.apply()
-        Log.d("SessionManager", "쿠키 ${cookieStore.size}개 저장 완료")
-    }
-
-    private fun loadCookiesFromStorage() {
-        val allEntries = sharedPreferences.all
-        allEntries.forEach { (key, value) ->
-            if (value is String) {
-                try {
-                    val parts = value.split("|")
-                    if (parts.size >= 7) {
-                        val cookie = Cookie.Builder()
-                            .name(parts[0])
-                            .value(parts[1])
-                            .domain(parts[2])
-                            .path(parts[3])
-                            .apply {
-                                val expiresAt = parts[4].toLong()
-                                if (expiresAt > 0) expiresAt(expiresAt)
-                                if (parts[5].toBoolean()) secure()
-                                if (parts[6].toBoolean()) httpOnly()
-                            }
-                            .build()
-
-                        // 만료되지 않은 쿠키만 복원
-                        if (cookie.expiresAt == 0L || cookie.expiresAt > System.currentTimeMillis()) {
-                            cookieStore[key] = cookie
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.e("SessionManager", "쿠키 복원 실패: $key", e)
-                }
-            }
-        }
-        Log.d("SessionManager", "쿠키 ${cookieStore.size}개 복원 완료")
-    }
-
     // ==================== 익명 모드 관련 메소드 ====================
 
+    // 익명 모드 설정
     fun setAnonymousMode(anonymous: Boolean) {
         isAnonymousMode = anonymous
         if (anonymous) {
@@ -145,99 +71,87 @@ class SessionManager private constructor(private val context: Context) {
         }
     }
 
+    // 익명 모드 확인
     fun isAnonymousMode(): Boolean {
         return isAnonymousMode
     }
 
-    // ==================== 쿠키 접근 메소드들 (개선됨) ====================
+    // ==================== 쿠키 접근 메소드들 ====================
 
+    // 1. 모든 쿠키 가져오기
     fun getAllCookies(): List<Cookie> {
-        return cookieStore.values.toList()
+        return cookieStore.toList() // 복사본 반환으로 안전성 확보
     }
 
+    // 2. 특정 이름의 쿠키 가져오기
     fun getCookie(name: String): Cookie? {
-        return cookieStore.values.find { it.name == name }
+        return cookieStore.find { it.name == name }
     }
 
+    // 3. 특정 URL에 해당하는 쿠키들 가져오기
     fun getCookiesForUrl(url: String): List<Cookie> {
         val httpUrl = try {
             url.toHttpUrlOrNull()
         } catch (e: Exception) {
             null
         } ?: return emptyList()
-        return cookieStore.values.filter { it.matches(httpUrl) }
+        return cookieStore.filter { it.matches(httpUrl) }
     }
 
-    // 세션 쿠키 검색 로직 개선
+    // 4. 세션 쿠키 가져오기 (일반적으로 JSESSIONID)
     fun getSessionCookie(): Cookie? {
-        // 우선순위: JSESSIONID > sessionid > session 포함
-        return getCookie("JSESSIONID")
-            ?: getCookie("sessionid")
-            ?: getCookie("SESSION")
-            ?: cookieStore.values.find { it.name.contains("session", ignoreCase = true) }
+        return cookieStore.find {
+            it.name.equals("JSESSIONID", ignoreCase = true) ||
+                    it.name.equals("sessionid", ignoreCase = true) ||
+                    it.name.contains("session", ignoreCase = true)
+        }
     }
 
+    // 5. 쿠키를 Cookie 헤더 문자열로 변환
     fun getCookieHeader(url: String): String {
         val cookies = getCookiesForUrl(url)
         return cookies.joinToString("; ") { "${it.name}=${it.value}" }
     }
 
+    // 6. OkHttpClient 인스턴스 가져오기 (다른 곳에서 같은 쿠키 사용)
     fun getHttpClient(): OkHttpClient {
         return client
     }
 
+    // 7. 쿠키 수동 추가 (필요한 경우)
     fun addCookie(cookie: Cookie) {
-        val key = "${cookie.name}_${cookie.domain}"
-        cookieStore[key] = cookie
-        saveCookiesToStorage()
-        Log.d("SessionManager", "쿠키 수동 추가: ${cookie.name}=${cookie.value}")
+        cookieStore.add(cookie)
+        Log.d("SessionManager", "쿠키 추가: ${cookie.name}=${cookie.value}")
     }
 
+    // 8. 특정 쿠키 삭제
     fun removeCookie(name: String) {
-        val keysToRemove = cookieStore.keys.filter { it.startsWith("${name}_") }
-        val removed = keysToRemove.isNotEmpty()
-
-        keysToRemove.forEach { key ->
-            cookieStore.remove(key)
-            sharedPreferences.edit().remove(key).apply()
-        }
-
+        val removed = cookieStore.removeAll { it.name == name }
         if (removed) {
             Log.d("SessionManager", "쿠키 삭제: $name")
         }
     }
 
+    // 9. 세션 ID만 간단히 가져오기
     fun getSessionId(): String? {
         return getSessionCookie()?.value
     }
 
+    // 10. 쿠키 개수 확인
     fun getCookieCount(): Int {
         return cookieStore.size
     }
 
-    // 세션 상태 디버깅 메소드 추가
-    fun debugSessionState() {
-        Log.d("SessionManager", "=== 세션 상태 디버그 ===")
-        Log.d("SessionManager", "익명 모드: $isAnonymousMode")
-        Log.d("SessionManager", "총 쿠키 개수: ${cookieStore.size}")
-        Log.d("SessionManager", "세션 쿠키: ${getSessionCookie()?.let { "${it.name}=${it.value}" } ?: "없음"}")
-        cookieStore.values.forEach { cookie ->
-            Log.d("SessionManager", "  쿠키: ${cookie.name}=${cookie.value} (도메인: ${cookie.domain})")
-        }
-        Log.d("SessionManager", "========================")
-    }
-
     // ==================== 인증 관련 메소드들 ====================
 
+    // 소셜 로그인
     fun socialLogin(uid: String, email: String, name: String, photoUrl: String,
                     callback: (Boolean, String) -> Unit) {
+        // 익명 모드 해제
         setAnonymousMode(false)
 
         Thread {
             try {
-                Log.d("SessionManager", "소셜 로그인 시작 - 현재 쿠키 개수: ${getCookieCount()}")
-                debugSessionState()
-
                 val json = JSONObject().apply {
                     put("account_code", uid)
                     put("email", email)
@@ -257,12 +171,11 @@ class SessionManager private constructor(private val context: Context) {
                 val responseBody = response.body?.string()
 
                 Log.d("SessionManager", "소셜 로그인 응답: $responseBody")
-                Log.d("SessionManager", "응답 후 쿠키 개수: ${getCookieCount()}")
-                debugSessionState()
 
                 if (response.isSuccessful && responseBody != null) {
                     val jsonResponse = JSONObject(responseBody)
                     if (jsonResponse.getBoolean("success")) {
+                        Log.d("SessionManager", "로그인 후 쿠키 개수: ${getCookieCount()}")
                         callback(true, jsonResponse.getString("message"))
                     } else {
                         callback(false, jsonResponse.getString("message"))
@@ -278,7 +191,9 @@ class SessionManager private constructor(private val context: Context) {
         }.start()
     }
 
+    // 현재 로그인된 사용자 정보 조회 (수정)
     fun getCurrentUser(callback: (Boolean, String?, Map<String, Any>?) -> Unit) {
+        // 익명 모드인 경우 익명 사용자 정보 반환
         if (isAnonymousMode) {
             val anonymousUserInfo = mapOf(
                 "userId" to -1L,
@@ -294,9 +209,6 @@ class SessionManager private constructor(private val context: Context) {
 
         Thread {
             try {
-                Log.d("SessionManager", "사용자 정보 조회 시작")
-                debugSessionState()
-
                 val request = Request.Builder()
                     .url("$baseUrl/users/current")
                     .get()
@@ -305,7 +217,8 @@ class SessionManager private constructor(private val context: Context) {
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
 
-                Log.d("SessionManager", "현재 사용자 조회 응답: $responseBody")
+                Log.d("SessionManager", "현재 사용자 조회: $responseBody")
+                Log.d("SessionManager", "요청 시 쿠키 개수: ${getCookieCount()}")
 
                 if (response.isSuccessful && responseBody != null) {
                     val jsonResponse = JSONObject(responseBody)
@@ -332,7 +245,9 @@ class SessionManager private constructor(private val context: Context) {
         }.start()
     }
 
+    // 세션 유효성 확인 (수정)
     fun checkSession(callback: (Boolean) -> Unit) {
+        // 익명 모드인 경우 true 반환
         if (isAnonymousMode) {
             Log.d("SessionManager", "익명 모드 - 세션 유효함으로 처리")
             callback(true)
@@ -341,9 +256,6 @@ class SessionManager private constructor(private val context: Context) {
 
         Thread {
             try {
-                Log.d("SessionManager", "세션 확인 시작")
-                debugSessionState()
-
                 val request = Request.Builder()
                     .url("$baseUrl/users/check-session")
                     .get()
@@ -352,7 +264,8 @@ class SessionManager private constructor(private val context: Context) {
                 val response = client.newCall(request).execute()
                 val responseBody = response.body?.string()
 
-                Log.d("SessionManager", "세션 확인 응답: $responseBody")
+                Log.d("SessionManager", "세션 확인: $responseBody")
+                Log.d("SessionManager", "세션 확인 시 쿠키 개수: ${getCookieCount()}")
 
                 if (response.isSuccessful && responseBody != null) {
                     val jsonResponse = JSONObject(responseBody)
@@ -368,7 +281,9 @@ class SessionManager private constructor(private val context: Context) {
         }.start()
     }
 
+    // 로그아웃 (수정)
     fun logout(callback: (Boolean, String) -> Unit) {
+        // 익명 모드인 경우 플래그만 해제
         if (isAnonymousMode) {
             setAnonymousMode(false)
             Log.d("SessionManager", "익명 모드 해제")
@@ -378,8 +293,6 @@ class SessionManager private constructor(private val context: Context) {
 
         Thread {
             try {
-                Log.d("SessionManager", "로그아웃 시작 - 현재 쿠키 개수: ${getCookieCount()}")
-
                 val request = Request.Builder()
                     .url("$baseUrl/users/logout")
                     .post("{}".toRequestBody("application/json".toMediaType()))
@@ -390,15 +303,21 @@ class SessionManager private constructor(private val context: Context) {
 
                 Log.d("SessionManager", "로그아웃 응답: $responseBody")
 
-                // 서버 응답과 관계없이 로컬 쿠키 삭제
-                cookieStore.clear()
-                sharedPreferences.edit().clear().apply()
-                Log.d("SessionManager", "로컬 쿠키 삭제 완료, 현재 쿠키 개수: ${getCookieCount()}")
-
                 if (response.isSuccessful && responseBody != null) {
                     val jsonResponse = JSONObject(responseBody)
-                    callback(true, jsonResponse.optString("message", "로그아웃 완료"))
+                    if (jsonResponse.getBoolean("success")) {
+                        // 서버 로그아웃 성공 시 로컬 쿠키도 삭제
+                        Log.d("SessionManager", "로그아웃 전 쿠키 개수: ${getCookieCount()}")
+                        cookieStore.clear()
+                        Log.d("SessionManager", "로컬 쿠키 삭제 완료, 현재 쿠키 개수: ${getCookieCount()}")
+                        callback(true, jsonResponse.getString("message"))
+                    } else {
+                        callback(false, "서버 로그아웃 실패")
+                    }
                 } else {
+                    // 서버 요청 실패 시에도 로컬 쿠키는 삭제
+                    cookieStore.clear()
+                    Log.d("SessionManager", "서버 요청 실패했지만 로컬 쿠키 삭제")
                     callback(true, "로그아웃 완료")
                 }
 
@@ -406,7 +325,6 @@ class SessionManager private constructor(private val context: Context) {
                 Log.e("SessionManager", "로그아웃 실패", e)
                 // 네트워크 오류 시에도 로컬 쿠키는 삭제
                 cookieStore.clear()
-                sharedPreferences.edit().clear().apply()
                 callback(true, "로그아웃 완료")
             }
         }.start()

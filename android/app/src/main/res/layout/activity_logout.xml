@@ -18,7 +18,7 @@
         android:layout_height="272dp">
 
         <Button
-            android:id="@+id/btnLogout"
+            android:id="@+id/btnLogouttest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="72dp"

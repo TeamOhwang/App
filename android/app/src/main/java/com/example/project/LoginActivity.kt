@@ -54,12 +54,22 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun checkExistingSession() {
+        Log.d("LoginActivity", "기존 세션 확인 시작")
         sessionManager.checkSession { isValid ->
             if (isValid) {
-                // 이미 로그인된 상태 (일반 로그인 또는 익명 모드) - MainActivity로 이동
                 runOnUiThread {
-                    Log.d("LoginActivity", "기존 세션 발견 - MainActivity로 이동")
-                    moveToMainActivity()
+                    val isAnonymous = sessionManager.isAnonymousMode()
+                    Log.d("LoginActivity", "세션 유효함 - 익명 모드: $isAnonymous")
+
+                    if (isAnonymous) {
+                        // 익명 모드 - 로그인 화면에 머물러 사용자에게 선택권 부여
+                        Log.d("LoginActivity", "기존 익명 세션 발견 - 로그인 화면 유지")
+                        // 이전 코드: moveToMainActivityForAnonymous()
+                    } else {
+                        // 일반 로그인 - PostDetailActivity로 자동 이동
+                        Log.d("LoginActivity", "기존 로그인 세션 발견 - PostDetailActivity로 이동")
+                        moveToMainActivity()
+                    }
                 }
             } else {
                 Log.d("LoginActivity", "세션 없음 - 로그인 화면 표시")
@@ -70,7 +80,7 @@ class LoginActivity : AppCompatActivity() {
     // 익명 모드 시작
     private fun startAnonymousMode() {
         sessionManager.setAnonymousMode(true)
-        Log.d("LoginActivity", "익명 모드로 MainActivity 이동")
+        Log.d("LoginActivity", "익명 모드로 AnonymousMainActivity 이동")
         moveToMainActivityForAnonymous()
     }
 
@@ -128,6 +138,7 @@ class LoginActivity : AppCompatActivity() {
             runOnUiThread {
                 if (success) {
                     Log.i("LoginActivity", "서버 로그인 성공: $message")
+                    Log.i("LoginActivity", "익명 모드 상태: ${sessionManager.isAnonymousMode()}")
                     Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
                     moveToMainActivity()
                 } else {
@@ -139,15 +150,15 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun moveToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, PostDetailActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(intent)
         finish()
     }
 
-    // 익명 모드용 MainActivity 이동 (플래그 없음)
+    // 익명 모드용 AnonymousMainActivity 이동 (플래그 없음)
     private fun moveToMainActivityForAnonymous() {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, AnonymousMainActivity::class.java)
         startActivity(intent)
         // finish()를 호출하지 않음 - 뒤로가기로 로그인 화면 복귀 가능
     }

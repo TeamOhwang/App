@@ -20,6 +20,15 @@
             android:name=".PostActivity"
             android:exported="false" />
         <activity
+            android:name=".PostDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AnonymousMainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AnonymousMyPageActivity"
+            android:exported="false" />
+        <activity
             android:name=".SplashActivity"
             android:exported="true">
 
@@ -32,6 +41,9 @@
         </activity>
         <activity
             android:name=".MyPage"
+            android:exported="false" />
+        <activity
+            android:name=".MyPageActivity"
             android:exported="false" />
         <activity
             android:name=".LogoutActivity"
