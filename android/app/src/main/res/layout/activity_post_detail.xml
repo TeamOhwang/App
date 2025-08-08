@@ -127,13 +127,14 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
-    <!-- 하단 네비게이션 -->
+    <!-- 하단 네비게이션 부활! -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:background="#FFFFFF">
+        android:background="#FFFFFF"
+        android:elevation="8dp">
 
         <ImageView
             android:id="@+id/homeicon"
@@ -182,8 +183,6 @@
             app:layout_constraintStart_toEndOf="@+id/chaticon"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/userlogo" />
-
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
