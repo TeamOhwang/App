@@ -1,11 +1,9 @@
 package com.example.backend.domain.post;
 
-
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.example.backend.domain.post.DTO.PostResponseDto;
 import com.example.backend.entity.Users;
 import com.example.backend.repository.PostRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,31 +14,18 @@ import lombok.RequiredArgsConstructor;
 public class PostService {
     private final PostRepository postRepository;
 
-
-
-    //게시글 생성
+    // 게시글 생성
     @Transactional
     public void createPost(Post post, Users user) {
         post.setUser(user);
         postRepository.save(post);
     }
 
-    //게시글 전체조회
+    // 게시글 전체조회
     @Transactional(readOnly = true)
-    public List<PostResponseDto> getAllPosts() {
-       List<Post> posts = postRepository.findAll(); // JOIN FETCH로 user까지 조회됨
-    return posts.stream()
-            .map(post -> new PostResponseDto(
-                    post.getId(),
-                    post.getContent(),
-                    post.getImgUrl(),
-                    post.getCreatedAt(),
-                    post.getUser().getId(),
-                    post.getUser().getNickname()
-            ))
-            .toList();
-}
-
+    public List<Post> getAllPosts() {
+        return postRepository.findAll();
+    }
 
     // 게시글 단건조회
     @Transactional(readOnly = true)
@@ -74,5 +59,3 @@ public class PostService {
     }
 
 }
-
-    

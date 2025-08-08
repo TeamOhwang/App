@@ -29,12 +29,7 @@ class PostDetailAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.activity_post_detail, parent, false)
-
-        // RecyclerView 아이템에서는 하단 네비게이션을 숨김 (중복 방지)
-        val bottomNav = view.findViewById<View>(R.id.bottomNav)
-        bottomNav?.visibility = View.GONE
-
+            .inflate(R.layout.item_post_detail, parent, false)
         return PostViewHolder(view)
     }
 
@@ -46,26 +41,28 @@ class PostDetailAdapter(
         holder.likeCount.text = "좋아요 ${post.likeCount}개"
         holder.description.text = post.description
 
-        // 프로필 이미지 로딩 (현재는 기본 이미지 사용, 추후 실제 프로필 이미지 URL 받으면 Glide로 로딩)
-        holder.profileImage.setImageResource(post.profileImageRes)
+        // 프로필 이미지 로딩
+        if (!post.profileImgUrl.isNullOrEmpty()) {
+            Glide.with(holder.itemView.context)
+                .load(post.profileImgUrl)
+                .circleCrop()
+                .placeholder(post.profileImageRes)
+                .error(post.profileImageRes)
+                .into(holder.profileImage)
+        } else {
+            holder.profileImage.setImageResource(post.profileImageRes)
+        }
 
-        // 게시글 이미지 로딩 (실제 이미지 URL이 있다면 Glide 사용, 없으면 기본 이미지)
-        // 추후 Post 클래스에 실제 imgUrl 필드 추가하여 사용
-        // 현재는 기본 이미지 사용
-        holder.postImage.setImageResource(post.imageRes)
-
-        // 실제 서버 이미지 URL 로딩 예시 (Post 클래스에 imgUrl 필드 추가시 사용)
-        /*
+        // 게시글 이미지 로딩
         if (!post.imgUrl.isNullOrEmpty()) {
             Glide.with(holder.itemView.context)
                 .load(post.imgUrl)
-                .placeholder(R.drawable.img_salad) // 로딩 중 표시할 기본 이미지
-                .error(R.drawable.img_salad) // 로딩 실패시 표시할 기본 이미지
+                .placeholder(post.imageRes)
+                .error(post.imageRes)
                 .into(holder.postImage)
         } else {
-            holder.postImage.setImageResource(R.drawable.img_salad)
+            holder.postImage.setImageResource(post.imageRes)
         }
-        */
 
         // 좋아요 상태 업데이트 (현재는 기본 빈 하트, 추후 사용자별 좋아요 상태 확인 로직 추가)
         holder.likeButton.setImageResource(R.drawable.ic_heart_empty)

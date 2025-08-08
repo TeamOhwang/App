@@ -274,12 +274,18 @@ class NewPostActivity : AppCompatActivity() {
                                 
                                 if (success) {
                                     Toast.makeText(this@NewPostActivity, message, Toast.LENGTH_SHORT).show()
+                                    
+                                    // 성공 결과 반환
+                                    setResult(RESULT_OK)
                                     finish() // Activity 종료
                                 } else {
                                     Toast.makeText(this@NewPostActivity, "게시물 저장 실패: $message", Toast.LENGTH_SHORT).show()
                                 }
                             } catch (e: Exception) {
                                 Toast.makeText(this@NewPostActivity, "게시물 등록 완료!", Toast.LENGTH_SHORT).show()
+                                
+                                // 성공 결과 반환
+                                setResult(RESULT_OK)
                                 finish()
                             }
                         } else {

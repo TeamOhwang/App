@@ -50,6 +50,17 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "오류: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
+
+            // 게시물 목록 보기 버튼
+            val postDetailBtn = findViewById<Button>(R.id.postDetailBtn)
+            postDetailBtn.setOnClickListener {
+                try {
+                    val intent = Intent(this, PostDetailActivity::class.java)
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    Toast.makeText(this, "오류: ${e.message}", Toast.LENGTH_LONG).show()
+                }
+            }
         } catch (e: Exception) {
             Log.e("MainActivity", "onCreate 오류", e)
             Toast.makeText(this, "앱 시작 오류: ${e.message}", Toast.LENGTH_LONG).show()

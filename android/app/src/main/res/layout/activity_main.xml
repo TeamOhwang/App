@@ -25,4 +25,10 @@
         android:layout_height="wrap_content"
         android:text="마이페이지 바로가기" />
 
+    <Button
+        android:id="@+id/postDetailBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="게시물 목록 보기" />
+
 </LinearLayout>

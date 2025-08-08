@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.example.backend.entity.Users;
 import com.example.backend.domain.post.Post;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
 
 @RestController
 @RequestMapping("/api")
@@ -43,7 +43,7 @@ public class PostController {
             errorResponse.put("message", "로그인이 필요합니다.");
             return ResponseEntity.status(401).body(errorResponse);
         }
-        
+
         try {
             postService.createPost(post, user);
             Map<String, Object> response = new HashMap<>();
@@ -58,38 +58,42 @@ public class PostController {
         }
     }
 
-
     // 게시글 전체 조회
     @GetMapping("/read")
     public ResponseEntity<List<PostResponseDto>> getAllPosts() {
-        return ResponseEntity.ok(postService.getAllPosts()); // DTO 반환
+        List<Post> posts = postService.getAllPosts();
+        List<PostResponseDto> postDtos = posts.stream()
+                .map(PostResponseDto::new)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(postDtos);
     }
-    
+
     // 게시글 단건 조회
     @GetMapping("/post/{postId}")
-    public ResponseEntity<Post> getPostById(@PathVariable Long postId) {
-          Post posts  = postService.getPostById(postId);
-          return ResponseEntity.ok(posts);
+    public ResponseEntity<PostResponseDto> getPostById(@PathVariable Long postId) {
+        Post post = postService.getPostById(postId);
+        PostResponseDto postDto = new PostResponseDto(post);
+        return ResponseEntity.ok(postDto);
     }
 
     // 게시글 수정
-     @PutMapping("/post/{postId}")
-    public String updatePost(@PathVariable Long postId, @RequestBody Post updatedPost,HttpSession session) {
+    @PutMapping("/post/{postId}")
+    public String updatePost(@PathVariable Long postId, @RequestBody Post updatedPost, HttpSession session) {
         Users user = (Users) session.getAttribute("loginUser");
-        if (user == null) return "로그인이 필요합니다.";
+        if (user == null)
+            return "로그인이 필요합니다.";
         postService.updatePost(postId, updatedPost, user);
         return "게시글 수정 완료";
     }
-
 
     // 게시글 삭제
     @DeleteMapping("/post/{postId}")
     public String deletePost(@PathVariable Long postId, HttpSession session) {
         Users user = (Users) session.getAttribute("loginUser");
-        if (user == null) return "로그인이 필요합니다.";
+        if (user == null)
+            return "로그인이 필요합니다.";
         postService.deletePost(postId, user);
         return "게시글 삭제 완료";
     }
 
 }
-    
