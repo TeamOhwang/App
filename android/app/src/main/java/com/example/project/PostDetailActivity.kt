@@ -93,9 +93,6 @@ class PostDetailActivity : AppCompatActivity() {
         
         postDetailAdapter = PostDetailAdapter(
             postsList,
-            onRecipeClick = { post ->
-                Toast.makeText(this, "${post.username}님의 레시피:\n${post.recipeContent}", Toast.LENGTH_LONG).show()
-            },
             onCommentClick = { post ->
                 Toast.makeText(this, "댓글 기능은 추후 구현 예정입니다", Toast.LENGTH_SHORT).show()
             }

@@ -51,9 +51,6 @@ class PostActivity : AppCompatActivity() {
         // PostDetailAdapter 사용
         postAdapter = PostDetailAdapter(
             emptyList(),
-            onRecipeClick = { post ->
-                // 레시피 클릭 처리
-            },
             onCommentClick = { post ->
                 // 댓글 클릭 처리
             }
@@ -105,11 +102,18 @@ class PostActivity : AppCompatActivity() {
                 val imgUrl = jsonObject.optString("imgUrl")  // null일 수 있음
                 val createdAt = jsonObject.optString("createdAt", "")
 
-                // user 객체가 JSON에 없으므로 기본값 사용
-                val username = "익명${id}" // id로 구분
+                // user 정보 파싱 (PostResponseDto 구조에 맞게 수정)
+                val userObject = jsonObject.optJSONObject("user")
+                val username = if (userObject != null) {
+                    userObject.optString("nickname", "익명사용자")
+                } else {
+                    "익명${id}"
+                }
+                val profileImgUrl = userObject?.optString("profileImage")
 
                 // Post 클래스에 맞게 매핑
                 val post = Post(
+                    id = id,
                     username = username,
                     profileImageRes = R.drawable.ic_profile_placeholder,
                     imageRes = R.drawable.img_salad, // 기본 이미지 (Glide 로딩 실패시 사용)
@@ -119,7 +123,7 @@ class PostActivity : AppCompatActivity() {
                     recipeContent = content,
                     comments = emptyList(), // 기본값
                     imgUrl = if (imgUrl == "null" || imgUrl.isEmpty()) null else imgUrl, // null 처리
-                    profileImgUrl = null // 프로필 이미지 URL 없음
+                    profileImgUrl = if (profileImgUrl == "null" || profileImgUrl.isNullOrEmpty()) null else profileImgUrl
                 )
 
                 posts.add(post)

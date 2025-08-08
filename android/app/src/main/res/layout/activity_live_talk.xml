@@ -28,14 +28,14 @@
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="User"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:textColor="#333333"
-            android:gravity="center"
             android:layout_marginStart="16dp"
-            android:layout_marginEnd="40dp" />
+            android:layout_marginEnd="40dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="밥풀떼기"
+            android:textColor="#333333"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
     </LinearLayout>
 

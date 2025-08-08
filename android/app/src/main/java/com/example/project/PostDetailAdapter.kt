@@ -12,7 +12,6 @@ import com.bumptech.glide.Glide
 
 class PostDetailAdapter(
     private var posts: List<Post>,
-    private val onRecipeClick: (Post) -> Unit,
     private val onCommentClick: (Post) -> Unit
 ) : RecyclerView.Adapter<PostDetailAdapter.PostViewHolder>() {
 
@@ -24,7 +23,6 @@ class PostDetailAdapter(
         val commentButton: ImageView = itemView.findViewById(R.id.ivComment)
         val likeCount: TextView = itemView.findViewById(R.id.tvLikeCount)
         val description: TextView = itemView.findViewById(R.id.tvDescription)
-        val recipeButton: TextView = itemView.findViewById(R.id.tvRecipeButton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
@@ -68,10 +66,6 @@ class PostDetailAdapter(
         holder.likeButton.setImageResource(R.drawable.ic_heart_empty)
 
         // 클릭 리스너 설정
-        holder.recipeButton.setOnClickListener {
-            onRecipeClick(post)
-        }
-
         holder.commentButton.setOnClickListener {
             onCommentClick(post)
         }
