@@ -9,7 +9,6 @@ import com.example.backend.domain.bookmark.DTO.PostThumbDto;
 import com.example.backend.domain.bookmark.DTO.PostWithLikeCountDto;
 import com.example.backend.domain.bookmark.DTO.UserProfileUpdateDto;
 import com.example.backend.domain.like.LikeRepository;
-import com.example.backend.domain.post.Post;
 import com.example.backend.entity.Users;
 import com.example.backend.repository.PostRepository;
 import com.example.backend.repository.UserRepository;
@@ -45,13 +44,6 @@ public class MypageService {
         }
     }
 
-  @Transactional(readOnly = true)
-public List<PostThumbDto> myPostsSimplesse(Long userId) {
-    return postRepository.findByUser_Id(userId).stream()
-        .map(p -> new PostThumbDto(p.getId(), p.getImgUrl()))
-        .toList();
-}
-
 
 
 // 좋아요한 게시글 (썸네일 DTO)
@@ -71,14 +63,6 @@ public List<PostThumbDto> myPostsSimplesse(Long userId) {
                         p.getImgUrl(),        // ★ DTO와 일치
                         p.getContent(),
                         (long) p.getLikes().size()))
-                .toList();
-    }
-
-    // (선택) 내 게시글 썸네일 전용
-    @Transactional(readOnly = true)
-    public List<PostThumbDto> myPostsSimple(Long userId) {
-        return postRepository.findByUser_Id(userId).stream()
-                .map(p -> new PostThumbDto(p.getId(), p.getImgUrl()))
                 .toList();
     }
 
