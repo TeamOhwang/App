@@ -10,12 +10,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.backend.domain.bookmark.DTO.PostThumbDto;
 import com.example.backend.domain.bookmark.DTO.PostWithLikeCountDto;
 import com.example.backend.domain.bookmark.DTO.UserProfileDto;
 import com.example.backend.domain.bookmark.DTO.UserProfileUpdateDto;
-import com.example.backend.domain.post.Post;
 import com.example.backend.entity.Users;
-
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 
@@ -45,24 +44,41 @@ public ResponseEntity<Void> updateProfile(@RequestBody UserProfileUpdateDto dto,
     return ResponseEntity.ok().build();
 }
 
-
-// 좋아요한 게시글 불러오기
-@GetMapping("/mypage/likes")
-public ResponseEntity<List<Post>> getLikedPosts(HttpSession session) {
+@GetMapping("/mypage/my-posts")
+public ResponseEntity<List<PostThumbDto>> myPostsSimplesse(HttpSession session) {
     Users user = (Users) session.getAttribute("loginUser");
     if (user == null) return ResponseEntity.status(401).build();
-
-    return ResponseEntity.ok(mypageService.getLikedPosts(user.getId()));
+    return ResponseEntity.ok(mypageService.myPostsSimple(user.getId()));
 }
 
-// 내 게시글과 좋아요 수 불러오기
-@GetMapping("/mypage/posts-with-likes")
-public ResponseEntity<List<PostWithLikeCountDto>> getMyPostsWithLikeCount(HttpSession session) {
-    Users user = (Users) session.getAttribute("loginUser");
-    if (user == null) return ResponseEntity.status(401).build();
 
-    return ResponseEntity.ok(mypageService.myPostsWithLikeCount(user.getId()));
-}
+
+    // 좋아요한 게시글(썸네일)
+    @GetMapping("/mypage/likes")
+    public ResponseEntity<List<PostThumbDto>> getLikedPosts(HttpSession session) {
+        Users user = (Users) session.getAttribute("loginUser");
+        if (user == null) return ResponseEntity.status(401).build();
+
+        return ResponseEntity.ok(mypageService.getLikedPosts(user.getId()));
+    }
+
+    // 내 게시글 + 좋아요 수 + 이미지
+    @GetMapping("/mypage/posts-with-likes")
+    public ResponseEntity<List<PostWithLikeCountDto>> getMyPostsWithLikeCount(HttpSession session) {
+        Users user = (Users) session.getAttribute("loginUser");
+        if (user == null) return ResponseEntity.status(401).build();
+
+        return ResponseEntity.ok(mypageService.myPostsWithLikeCount(user.getId()));
+    }
+
+    // (선택) 내 게시글 썸네일 전용
+    @GetMapping("/mypage/my-posts")
+    public ResponseEntity<List<PostThumbDto>> getMyPosts(HttpSession session) {
+        Users user = (Users) session.getAttribute("loginUser");
+        if (user == null) return ResponseEntity.status(401).build();
+
+        return ResponseEntity.ok(mypageService.myPostsSimple(user.getId()));
+    }
 
 // 회원 탈퇴
 @DeleteMapping("/mypage/withdraw")

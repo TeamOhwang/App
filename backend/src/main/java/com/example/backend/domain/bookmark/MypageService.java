@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.backend.domain.bookmark.DTO.PostThumbDto;
 import com.example.backend.domain.bookmark.DTO.PostWithLikeCountDto;
 import com.example.backend.domain.bookmark.DTO.UserProfileUpdateDto;
 import com.example.backend.domain.like.LikeRepository;
@@ -44,22 +45,40 @@ public class MypageService {
         }
     }
 
-    // 좋아요한 게시글 불러오기
+  @Transactional(readOnly = true)
+public List<PostThumbDto> myPostsSimplesse(Long userId) {
+    return postRepository.findByUser_Id(userId).stream()
+        .map(p -> new PostThumbDto(p.getId(), p.getImgUrl()))
+        .toList();
+}
+
+
+
+// 좋아요한 게시글 (썸네일 DTO)
     @Transactional(readOnly = true)
-    public List<Post> getLikedPosts(Long userId) {
-        return likeRepository.findLikedPostsByUserId(userId);
+    public List<PostThumbDto> getLikedPosts(Long userId) {
+        return likeRepository.findLikedPostsByUserId(userId).stream()
+                .map(p -> new PostThumbDto(p.getId(), p.getImgUrl()))
+                .toList();
     }
 
-    // 내 게시글과 좋아요 수 불러오기
+    // 내 게시글 + 좋아요 수 + 이미지
     @Transactional(readOnly = true)
     public List<PostWithLikeCountDto> myPostsWithLikeCount(Long userId) {
-        List<Post> posts = postRepository.findByUser_Id(userId);
+        return postRepository.findByUser_Id(userId).stream()
+                .map(p -> new PostWithLikeCountDto(
+                        p.getId(),
+                        p.getImgUrl(),        // ★ DTO와 일치
+                        p.getContent(),
+                        (long) p.getLikes().size()))
+                .toList();
+    }
 
-        return posts.stream()
-                .map(post -> new PostWithLikeCountDto(
-                        post.getId(),
-                        post.getContent(),
-                        (long) post.getLikes().size()))
+    // (선택) 내 게시글 썸네일 전용
+    @Transactional(readOnly = true)
+    public List<PostThumbDto> myPostsSimple(Long userId) {
+        return postRepository.findByUser_Id(userId).stream()
+                .map(p -> new PostThumbDto(p.getId(), p.getImgUrl()))
                 .toList();
     }
 

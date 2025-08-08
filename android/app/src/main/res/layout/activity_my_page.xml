@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- 상단 바 -->
-
+    <!-- 스크롤 영역 (하단 네비 위까지) -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
@@ -20,6 +18,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- 상단 바(로고 등) -->
             <LinearLayout
                 android:id="@+id/topBar"
                 android:layout_width="match_parent"
@@ -31,84 +30,88 @@
 
                 <ImageView
                     android:id="@+id/imageView25"
-                    android:layout_width="382dp"
+                    android:layout_width="0dp"
                     android:layout_height="26dp"
                     android:layout_weight="1"
                     app:srcCompat="@drawable/logo" />
-
             </LinearLayout>
 
+            <!-- 프로필 + 버튼 + 통계 -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/profilesection"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <Button
-                    android:id="@+id/btnLogout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="104dp"
-                    android:backgroundTint="#EF991F"
-                    android:text="로그아웃"
-                    android:textSize="16sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.944"
-                    app:layout_constraintStart_toStartOf="parent" />
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
 
                 <ImageView
                     android:id="@+id/profile"
                     android:layout_width="91dp"
                     android:layout_height="91dp"
                     android:layout_marginTop="20dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:srcCompat="@tools:sample/avatars" />
-
-                <Button
-                    android:id="@+id/button2"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_marginEnd="16dp"
-                    android:text="btn"
-                    app:circularflow_radiusInDP="0dp"
-                    app:cornerRadius="0dp"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.903"
-                    app:layout_constraintStart_toEndOf="@+id/profile"
-                    app:layout_constraintTop_toTopOf="@+id/profile" />
+                    tools:srcCompat="@tools:sample/avatars" />
 
                 <TextView
                     android:id="@+id/nickname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
+                    android:layout_marginTop="6dp"
                     android:text="닉네임"
                     android:textColor="#000000"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toTopOf="@+id/statBox"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/profile"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/profile" />
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <Button
+                    android:id="@+id/btnLogout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="로그아웃"
+                    android:textSize="14sp"
+                    android:backgroundTint="#EF991F"
+                    app:layout_constraintTop_toBottomOf="@id/nickname"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <Button
+                    android:id="@+id/btnEditProfile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="프로필 수정"
+                    android:textSize="14sp"
+                    android:backgroundTint="#1976D2"
+                    app:layout_constraintTop_toBottomOf="@id/btnLogout"
+                    app:layout_constraintEnd_toEndOf="parent" />
+
+                <Button
+                    android:id="@+id/btnWithdraw"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="회원 탈퇴"
+                    android:textSize="14sp"
+                    android:backgroundTint="#D32F2F"
+                    app:layout_constraintTop_toBottomOf="@id/btnEditProfile"
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <LinearLayout
                     android:id="@+id/statBox"
                     android:layout_width="0dp"
                     android:layout_height="60dp"
+                    android:layout_marginTop="12dp"
                     android:background="#D0CBCB"
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:padding="12dp"
-                    app:circularflow_radiusInDP="10dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintTop_toBottomOf="@id/btnWithdraw"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/profile"
-                    app:layout_constraintVertical_bias="0.793">
+                    app:layout_constraintEnd_toEndOf="parent">
 
                     <LinearLayout
                         android:id="@+id/posts"
@@ -123,15 +126,13 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="게시물"
-                            android:textColor="#040404"
                             android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/num1"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="3"
-                            android:textColor="#000000"
+                            android:text="0"
                             android:textStyle="bold" />
                     </LinearLayout>
 
@@ -148,30 +149,54 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="북마크"
-                            android:textColor="#020202"
                             android:textSize="14sp" />
 
                         <TextView
                             android:id="@+id/num2"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="10"
-                            android:textColor="#000000"
+                            android:text="0"
                             android:textStyle="bold" />
-
                     </LinearLayout>
-
                 </LinearLayout>
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/postlist"
+            <!-- 내 게시글 섹션 -->
+            <TextView
+                android:id="@+id/labelMyPosts"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clipToPadding="false"
-                android:nestedScrollingEnabled="false"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:paddingStart="16dp"
+                android:text="내 게시글"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/postlistMy"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:overScrollMode="never"
+                android:nestedScrollingEnabled="false"
+                android:padding="4dp" />
+
+            <!-- 좋아요한 게시글 섹션 -->
+            <TextView
+                android:id="@+id/labelLiked"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:paddingStart="16dp"
+                android:text="좋아요한 게시글"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/postlistLiked"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:overScrollMode="never"
+                android:nestedScrollingEnabled="false"
                 android:padding="4dp" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
@@ -191,7 +216,6 @@
             android:padding="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/newposticon"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/home" />
@@ -203,7 +227,6 @@
             android:padding="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/chaticon"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/homeicon"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/newpost" />
@@ -215,7 +238,6 @@
             android:padding="5dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/mypageicon"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/newposticon"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/chat" />
@@ -227,29 +249,9 @@
             android:padding="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/chaticon"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/userlogo" />
-
-        <!-- 비회원용 로그인 버튼 -->
-        <Button
-            android:id="@+id/loginButtonNav"
-            android:layout_width="0dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:backgroundTint="#4CAF50"
-            android:text="로그인"
-            android:textColor="#FFFFFF"
-            android:textSize="12sp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/homeicon"
-            app:layout_constraintTop_toTopOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </RelativeLayout>

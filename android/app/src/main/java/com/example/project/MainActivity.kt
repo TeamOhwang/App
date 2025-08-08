@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 
             mypagebtn.setOnClickListener{
                 try {
-                    val intent = Intent(this, MyPage::class.java)
+                    val intent = Intent(this, MyPageActivity::class.java)
                     startActivity(intent)
                 } catch (e : Exception) {
                     Toast.makeText(this, "오류: ${e.message}", Toast.LENGTH_LONG).show()

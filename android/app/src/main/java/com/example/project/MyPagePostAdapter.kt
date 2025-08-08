@@ -5,40 +5,45 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
+import com.bumptech.glide.Glide
 
-// MyPage에서 사용할 간단한 게시물 데이터 클래스
-data class MyPagePost(
+data class GridItem(
     val id: Long,
-    val imageRes: Int
+    val imgUrl: String?
 )
 
-class MyPagePostAdapter : ListAdapter<MyPagePost, MyPagePostAdapter.PostViewHolder>(MyPagePostDiffCallback()) {
+class MyPageGridAdapter(
+    private var items: MutableList<GridItem>
+) : RecyclerView.Adapter<MyPageGridAdapter.VH>() {
 
-    class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imageView: ImageView = itemView.findViewById(R.id.postimg)
+    class VH(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val iv: ImageView = itemView.findViewById(R.id.postimg)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_post, parent, false)
-        return PostViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.item_post, parent, false)
+        return VH(v)
     }
 
-    override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
-        val post = getItem(position)
-        holder.imageView.setImageResource(post.imageRes)
+    override fun onBindViewHolder(holder: VH, position: Int) {
+        val item = items[position]
+        if (!item.imgUrl.isNullOrEmpty()) {
+            Glide.with(holder.itemView.context)
+                .load(item.imgUrl)
+                .centerCrop()
+                .placeholder(R.drawable.img_salad)
+                .error(R.drawable.img_salad)
+                .into(holder.iv)
+        } else {
+            holder.iv.setImageResource(R.drawable.img_salad)
+        }
     }
-}
 
-// DiffUtil을 사용한 효율적인 리스트 업데이트
-class MyPagePostDiffCallback : DiffUtil.ItemCallback<MyPagePost>() {
-    override fun areItemsTheSame(oldItem: MyPagePost, newItem: MyPagePost): Boolean {
-        return oldItem.id == newItem.id
-    }
+    override fun getItemCount() = items.size
 
-    override fun areContentsTheSame(oldItem: MyPagePost, newItem: MyPagePost): Boolean {
-        return oldItem == newItem
+    fun update(newItems: List<GridItem>) {
+        items.clear()
+        items.addAll(newItems)
+        notifyDataSetChanged()
     }
 }
