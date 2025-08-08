@@ -8,5 +8,6 @@ public record PostResponseDto(
         String content,
         String imgUrl,
         LocalDateTime createdAt,
+        Long userId,
         String nickname
 ) {}

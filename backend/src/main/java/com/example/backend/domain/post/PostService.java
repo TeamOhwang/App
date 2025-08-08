@@ -35,6 +35,7 @@ public class PostService {
                     post.getContent(),
                     post.getImgUrl(),
                     post.getCreatedAt(),
+                    post.getUser().getId(),
                     post.getUser().getNickname()
             ))
             .toList();
