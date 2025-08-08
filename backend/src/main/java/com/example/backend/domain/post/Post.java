@@ -59,8 +59,9 @@ public class Post {
 
 
     @Builder
-    public Post(String content, Users user) {
+    public Post(String content, String imgUrl, Users user) {
         this.content = content;
+        this.imgUrl = imgUrl;
         this.user = user;
     }
 
