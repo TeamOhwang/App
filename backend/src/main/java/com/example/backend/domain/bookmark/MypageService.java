@@ -44,7 +44,13 @@ public class MypageService {
         }
     }
 
-
+    // (선택) 내 게시글 썸네일 전용
+    @Transactional(readOnly = true)
+    public List<PostThumbDto> myPostsSimple(Long userId) {
+        return postRepository.findByUser_Id(userId).stream()
+                .map(p -> new PostThumbDto(p.getId(), p.getImgUrl()))
+                .toList();
+    }
 
 // 좋아요한 게시글 (썸네일 DTO)
     @Transactional(readOnly = true)
