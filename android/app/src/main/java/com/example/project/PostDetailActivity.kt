@@ -17,6 +17,7 @@ import org.json.JSONException
 
 class PostDetailActivity : AppCompatActivity() {
 
+    // 하단 네비게이션 아이콘들
     private lateinit var homeIcon: ImageView
     private lateinit var newPostIcon: ImageView
     private lateinit var chatIcon: ImageView
@@ -24,16 +25,15 @@ class PostDetailActivity : AppCompatActivity() {
 
     // 게시글 목록 관련 변수들
     private lateinit var recyclerView: RecyclerView
-    private lateinit var postAdapter: PostDetailAdapter // PostListAdapter가 아니라 PostDetailAdapter 사용
+    private lateinit var postAdapter: PostDetailAdapter
     private lateinit var requestQueue: RequestQueue
 
     // 서버 URL - 8081 포트 사용
     private val BASE_URL = "http://10.0.2.2:8081" // 안드로이드 에뮬레이터용
-    // private val BASE_URL = "http://192.168.0.xxx:8081" // 실제 기기용 - PC IP로 변경
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_post) // activity_post.xml 사용 (activity_post_detail.xml이 아님!)
+        setContentView(R.layout.activity_post)
 
         // Volley 요청 큐 초기화
         requestQueue = Volley.newRequestQueue(this)
@@ -44,7 +44,7 @@ class PostDetailActivity : AppCompatActivity() {
         // RecyclerView 설정
         setupRecyclerView()
 
-        // 하단 네비게이션 설정 (있을 경우에만)
+        // 하단 네비게이션 설정
         setupBottomNavigation()
 
         // 서버에서 게시글 데이터 가져오기
@@ -55,7 +55,7 @@ class PostDetailActivity : AppCompatActivity() {
         // RecyclerView (필수)
         recyclerView = findViewById(R.id.recyclerView)
 
-        // 하단 네비게이션 아이콘들 (없을 수 있으므로 안전하게 처리)
+        // 하단 네비게이션 아이콘들
         try {
             homeIcon = findViewById(R.id.homeicon)
             newPostIcon = findViewById(R.id.newposticon)
@@ -69,7 +69,7 @@ class PostDetailActivity : AppCompatActivity() {
     private fun setupRecyclerView() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // PostDetailAdapter 사용 (activity_post_detail.xml 호환)
+        // PostDetailAdapter 사용
         postAdapter = PostDetailAdapter(
             emptyList(),
             onRecipeClick = { post ->
@@ -83,14 +83,11 @@ class PostDetailActivity : AppCompatActivity() {
         recyclerView.adapter = postAdapter
     }
 
-
     // 서버에서 게시글 데이터 가져오기
     private fun fetchPostsFromServer() {
         val url = "$BASE_URL/api/read"
 
-        // 로그로 요청 URL 확인
         Log.d("PostDetailActivity", "서버 요청 URL: $url")
-        Toast.makeText(this, "게시글을 불러오는 중...", Toast.LENGTH_SHORT).show()
 
         val jsonArrayRequest = JsonArrayRequest(
             Request.Method.GET,
@@ -101,7 +98,6 @@ class PostDetailActivity : AppCompatActivity() {
                 try {
                     val posts = parsePostsFromJson(response)
                     updatePostsList(posts)
-                    Toast.makeText(this, "게시글 ${posts.size}개를 불러왔습니다!", Toast.LENGTH_SHORT).show()
                 } catch (e: JSONException) {
                     e.printStackTrace()
                     Log.e("PostDetailActivity", "JSON 파싱 오류: ${e.message}")
@@ -112,7 +108,6 @@ class PostDetailActivity : AppCompatActivity() {
             { error ->
                 error.printStackTrace()
                 Log.e("PostDetailActivity", "서버 연결 오류: ${error.message}")
-                Log.e("PostDetailActivity", "에러 상세: ${error.networkResponse}")
 
                 val errorMsg = when {
                     error.networkResponse == null -> "네트워크 연결 실패 - 서버가 8081포트에서 실행중인지 확인하세요"
@@ -191,10 +186,12 @@ class PostDetailActivity : AppCompatActivity() {
                 5,
                 "서버 연결 테스트를 위한 첫 번째 더미 데이터입니다",
                 "테스트유저1님의 레시피",
-                "이것은 서버 연결이 안될 때 표시되는 테스트 데이터입니다.\n\n실제 서버가 연결되면 DB의 실제 게시글이 표시됩니다.",
+                "이것은 서버 연결이 안될 때 표시되는 테스트 데이터입니다.\n\n실제 서버가 연결되면 DB의 실제 게시글이 순서대로 표시됩니다.",
                 listOf(
-                    Comment("댓글유저1", R.drawable.ic_profile_placeholder_2, "1시간 전", "테스트 댓글입니다"),
-                )
+                    Comment("댓글유저1", R.drawable.ic_profile_placeholder_2, "1시간 전", "테스트 댓글입니다")
+                ),
+                imgUrl = "https://picsum.photos/400/300?random=1",
+                profileImgUrl = "https://picsum.photos/100/100?random=101"
             ),
             Post(
                 "테스트유저2",
@@ -203,10 +200,12 @@ class PostDetailActivity : AppCompatActivity() {
                 3,
                 "서버 연결 테스트를 위한 두 번째 더미 데이터입니다",
                 "테스트유저2님의 레시피",
-                "이것도 테스트 데이터입니다. 실제로는 여러 개의 게시글이 목록으로 표시됩니다.",
+                "이것도 테스트 데이터입니다. 실제로는 DB에 저장된 순서대로 여러 개의 게시글이 목록으로 표시됩니다.",
                 listOf(
                     Comment("댓글유저2", R.drawable.ic_profile_placeholder_3, "30분 전", "서버 연결을 확인해보세요")
-                )
+                ),
+                imgUrl = "https://picsum.photos/400/300?random=2",
+                profileImgUrl = "https://picsum.photos/100/100?random=102"
             ),
             Post(
                 "테스트유저3",
@@ -215,8 +214,10 @@ class PostDetailActivity : AppCompatActivity() {
                 8,
                 "서버 연결 테스트를 위한 세 번째 더미 데이터입니다",
                 "테스트유저3님의 레시피",
-                "세 번째 테스트 게시글입니다. DB 순서대로 목록이 표시됩니다.",
-                emptyList()
+                "세 번째 테스트 게시글입니다. 백엔드 DB에서 findAll()로 가져온 순서대로 목록이 표시됩니다.",
+                emptyList(),
+                imgUrl = "https://picsum.photos/400/300?random=3",
+                profileImgUrl = "https://picsum.photos/100/100?random=103"
             )
         )
 
@@ -224,7 +225,6 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigation() {
-        // 하단 네비게이션이 초기화되었는지 확인
         if (!::homeIcon.isInitialized) {
             Log.d("PostDetailActivity", "하단 네비게이션이 레이아웃에 없습니다")
             return
@@ -251,6 +251,7 @@ class PostDetailActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        // 요청 큐 정리
         requestQueue.cancelAll(this)
     }
 }

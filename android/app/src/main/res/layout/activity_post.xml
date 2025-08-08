@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- res/layout/activity_main.xml -->
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<!-- res/layout/activity_post.xml -->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,14 +8,15 @@
     android:background="@color/white"
     tools:context=".PostActivity">
 
-    <!-- 화면 상단 영역 (배너가 포함될 곳) -->
+    <!-- 상단 배너 영역 -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <!-- 여러 개의 배너를 좌우로 스와이프할 수 있는 ViewPager2 -->
+        <!-- 배너 ViewPager2 -->
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/bannerViewPager"
             android:layout_width="match_parent"
@@ -24,19 +25,79 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- 게시글 목록을 보여줄 RecyclerView -->
-    <!-- AppBarLayout 아래에 위치하고 스크롤 동작을 연결하기 위해 layout_behavior를 추가합니다. -->
+    <!-- 게시글 목록 RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:background="#F5F5F5"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/item_post" />
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        tools:listitem="@layout/activity_post_detail" />
 
-    <!-- '레시피 확인하기'를 눌렀을 때 아래에서 올라올 BottomSheet -->
-    <include
+    <!-- 하단 네비게이션 -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="#FFFFFF"
+        android:elevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:id="@+id/homeicon"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:padding="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/newposticon"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/home" />
+
+        <ImageView
+            android:id="@+id/newposticon"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/chaticon"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/homeicon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/newpost" />
+
+        <ImageView
+            android:id="@+id/chaticon"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:padding="5dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/mypageicon"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/newposticon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/chat" />
+
+        <ImageView
+            android:id="@+id/mypageicon"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/chaticon"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/userlogo" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- BottomSheet는 필요시 추가 -->
+    <!-- <include
         android:id="@+id/bottomSheet"
-        layout="@layout/bottom_sheet_post_detail" />
+        layout="@layout/bottom_sheet_post_detail" /> -->
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

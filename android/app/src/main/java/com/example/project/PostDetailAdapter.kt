@@ -1,5 +1,6 @@
 package com.example.project
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,9 +29,9 @@ class PostDetailAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.activity_post_detail, parent, false) // activity_post_detail.xml 사용
+            .inflate(R.layout.activity_post_detail, parent, false)
 
-        // 하단 네비게이션 숨기기 (RecyclerView 아이템에서는 불필요)
+        // RecyclerView 아이템에서는 하단 네비게이션을 숨김 (중복 방지)
         val bottomNav = view.findViewById<View>(R.id.bottomNav)
         bottomNav?.visibility = View.GONE
 
@@ -54,7 +55,7 @@ class PostDetailAdapter(
         holder.postImage.setImageResource(post.imageRes)
 
         // 실제 서버 이미지 URL 로딩 예시 (Post 클래스에 imgUrl 필드 추가시 사용)
-
+        /*
         if (!post.imgUrl.isNullOrEmpty()) {
             Glide.with(holder.itemView.context)
                 .load(post.imgUrl)
@@ -64,7 +65,7 @@ class PostDetailAdapter(
         } else {
             holder.postImage.setImageResource(R.drawable.img_salad)
         }
-
+        */
 
         // 좋아요 상태 업데이트 (현재는 기본 빈 하트, 추후 사용자별 좋아요 상태 확인 로직 추가)
         holder.likeButton.setImageResource(R.drawable.ic_heart_empty)
