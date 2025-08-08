@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.example.backend.domain.post.DTO.PostResponseDto;
 import com.example.backend.entity.Users;
 import com.example.backend.repository.PostRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +27,19 @@ public class PostService {
 
     //게시글 전체조회
     @Transactional(readOnly = true)
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
-    }
+    public List<PostResponseDto> getAllPosts() {
+       List<Post> posts = postRepository.findAll(); // JOIN FETCH로 user까지 조회됨
+    return posts.stream()
+            .map(post -> new PostResponseDto(
+                    post.getId(),
+                    post.getContent(),
+                    post.getImgUrl(),
+                    post.getCreatedAt(),
+                    post.getUser().getNickname()
+            ))
+            .toList();
+}
+
 
     // 게시글 단건조회
     @Transactional(readOnly = true)

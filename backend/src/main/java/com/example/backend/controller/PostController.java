@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.backend.entity.Users;
 import com.example.backend.domain.post.Post;
 import com.example.backend.domain.post.PostService;
+import com.example.backend.domain.post.DTO.PostResponseDto;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -41,9 +42,8 @@ public class PostController {
 
     // 게시글 전체 조회
     @GetMapping("/read")
-    public ResponseEntity<List<Post>> getAllPosts() {
-        List<Post> posts = postService.getAllPosts();
-        return ResponseEntity.ok(posts);
+    public ResponseEntity<List<PostResponseDto>> getAllPosts() {
+        return ResponseEntity.ok(postService.getAllPosts()); // DTO 반환
     }
     
     // 게시글 단건 조회
