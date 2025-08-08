@@ -44,12 +44,7 @@ public ResponseEntity<Void> updateProfile(@RequestBody UserProfileUpdateDto dto,
     return ResponseEntity.ok().build();
 }
 
-@GetMapping("/mypage/my-posts")
-public ResponseEntity<List<PostThumbDto>> myPostsSimplesse(HttpSession session) {
-    Users user = (Users) session.getAttribute("loginUser");
-    if (user == null) return ResponseEntity.status(401).build();
-    return ResponseEntity.ok(mypageService.myPostsSimple(user.getId()));
-}
+
 
 
 
@@ -79,6 +74,9 @@ public ResponseEntity<List<PostThumbDto>> myPostsSimplesse(HttpSession session) 
 
         return ResponseEntity.ok(mypageService.myPostsSimple(user.getId()));
     }
+
+
+
 
 // 회원 탈퇴
 @DeleteMapping("/mypage/withdraw")
