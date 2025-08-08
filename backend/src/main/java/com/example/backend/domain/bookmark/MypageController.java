@@ -44,15 +44,6 @@ public ResponseEntity<Void> updateProfile(@RequestBody UserProfileUpdateDto dto,
     return ResponseEntity.ok().build();
 }
 
-@GetMapping("/mypage/my-posts")
-public ResponseEntity<List<PostThumbDto>> myPostsSimplesse(HttpSession session) {
-    Users user = (Users) session.getAttribute("loginUser");
-    if (user == null) return ResponseEntity.status(401).build();
-    return ResponseEntity.ok(mypageService.myPostsSimple(user.getId()));
-}
-
-
-
     // 좋아요한 게시글(썸네일)
     @GetMapping("/mypage/likes")
     public ResponseEntity<List<PostThumbDto>> getLikedPosts(HttpSession session) {
@@ -71,14 +62,6 @@ public ResponseEntity<List<PostThumbDto>> myPostsSimplesse(HttpSession session) 
         return ResponseEntity.ok(mypageService.myPostsWithLikeCount(user.getId()));
     }
 
-    // (선택) 내 게시글 썸네일 전용
-    @GetMapping("/mypage/my-posts")
-    public ResponseEntity<List<PostThumbDto>> getMyPosts(HttpSession session) {
-        Users user = (Users) session.getAttribute("loginUser");
-        if (user == null) return ResponseEntity.status(401).build();
-
-        return ResponseEntity.ok(mypageService.myPostsSimple(user.getId()));
-    }
 
 // 회원 탈퇴
 @DeleteMapping("/mypage/withdraw")
