@@ -11,8 +11,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
 class PostDetailAdapter(
-    private var posts: List<Post>,
-    private val onCommentClick: (Post) -> Unit
+    private var posts: MutableList<Post>,
+    private val onCommentClick: (Post) -> Unit,
+    private val onLikeClick: (Post, Int) -> Unit
 ) : RecyclerView.Adapter<PostDetailAdapter.PostViewHolder>() {
 
     class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -62,26 +63,17 @@ class PostDetailAdapter(
             holder.postImage.setImageResource(post.imageRes)
         }
 
-        // 좋아요 상태 업데이트 (현재는 기본 빈 하트, 추후 사용자별 좋아요 상태 확인 로직 추가)
-        holder.likeButton.setImageResource(R.drawable.ic_heart_empty)
+        // 좋아요 상태 업데이트
+        updateLikeButton(holder.likeButton, post.isLiked)
 
         // 클릭 리스너 설정
         holder.commentButton.setOnClickListener {
             onCommentClick(post)
         }
 
-        // 좋아요 버튼 클릭 (추후 서버와 연동하여 실제 좋아요 기능 구현)
+        // 좋아요 버튼 클릭
         holder.likeButton.setOnClickListener {
-            // TODO: 서버에 좋아요 요청 보내기
-            // 현재는 UI만 변경 (임시)
-            val currentDrawable = holder.likeButton.drawable
-            if (currentDrawable.constantState == holder.itemView.context.getDrawable(R.drawable.ic_heart_empty)?.constantState) {
-                holder.likeButton.setImageResource(R.drawable.ic_heart_filled)
-                // holder.likeCount.text = "좋아요 ${post.likeCount + 1}개"
-            } else {
-                holder.likeButton.setImageResource(R.drawable.ic_heart_empty)
-                // holder.likeCount.text = "좋아요 ${post.likeCount}개"
-            }
+            onLikeClick(post, position)
         }
     }
 
@@ -89,7 +81,26 @@ class PostDetailAdapter(
 
     // 데이터 업데이트 함수
     fun updatePosts(newPosts: List<Post>) {
-        this.posts = newPosts
+        this.posts.clear()
+        this.posts.addAll(newPosts)
         notifyDataSetChanged()
+    }
+    
+    // 좋아요 상태 업데이트
+    fun updateLikeStatus(position: Int, isLiked: Boolean, likeCount: Int) {
+        if (position < posts.size) {
+            val updatedPost = posts[position].copy(isLiked = isLiked, likeCount = likeCount)
+            posts[position] = updatedPost
+            notifyItemChanged(position)
+        }
+    }
+    
+    // 좋아요 버튼 상태 업데이트
+    private fun updateLikeButton(likeButton: ImageView, isLiked: Boolean) {
+        if (isLiked) {
+            likeButton.setImageResource(R.drawable.ic_heart_filled)
+        } else {
+            likeButton.setImageResource(R.drawable.ic_heart_empty)
+        }
     }
 }

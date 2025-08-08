@@ -14,6 +14,7 @@ import com.example.backend.entity.Users;
 import com.example.backend.domain.post.Post;
 import com.example.backend.domain.post.PostService;
 import com.example.backend.domain.post.DTO.PostResponseDto;
+import com.example.backend.domain.like.LikeRepository;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @CrossOrigin(origins = "*")
 public class PostController {
     private final PostService postService;
+    private final LikeRepository likeRepository;
 
     // 게시글 생성
     @PostMapping("/post")
@@ -60,19 +62,25 @@ public class PostController {
 
     // 게시글 전체 조회
     @GetMapping("/read")
-    public ResponseEntity<List<PostResponseDto>> getAllPosts() {
+    public ResponseEntity<List<PostResponseDto>> getAllPosts(HttpSession session) {
+        Users user = (Users) session.getAttribute("loginUser");
+        Long currentUserId = user != null ? user.getId() : null;
+        
         List<Post> posts = postService.getAllPosts();
         List<PostResponseDto> postDtos = posts.stream()
-                .map(PostResponseDto::new)
+                .map(post -> new PostResponseDto(post, likeRepository, currentUserId))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(postDtos);
     }
 
     // 게시글 단건 조회
     @GetMapping("/post/{postId}")
-    public ResponseEntity<PostResponseDto> getPostById(@PathVariable Long postId) {
+    public ResponseEntity<PostResponseDto> getPostById(@PathVariable Long postId, HttpSession session) {
+        Users user = (Users) session.getAttribute("loginUser");
+        Long currentUserId = user != null ? user.getId() : null;
+        
         Post post = postService.getPostById(postId);
-        PostResponseDto postDto = new PostResponseDto(post);
+        PostResponseDto postDto = new PostResponseDto(post, likeRepository, currentUserId);
         return ResponseEntity.ok(postDto);
     }
 

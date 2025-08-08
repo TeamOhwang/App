@@ -3,6 +3,7 @@ package com.example.backend.domain.post.DTO;
 import java.time.LocalDateTime;
 
 import com.example.backend.domain.post.Post;
+import com.example.backend.domain.like.LikeRepository;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,6 +16,8 @@ public class PostResponseDto {
     private String imgUrl;
     private LocalDateTime createdAt;
     private UserInfo user;
+    private int likeCount;
+    private boolean isLiked;
 
     @Getter
     @NoArgsConstructor
@@ -30,7 +33,7 @@ public class PostResponseDto {
         }
     }
 
-    public PostResponseDto(Post post) {
+    public PostResponseDto(Post post, LikeRepository likeRepository, Long currentUserId) {
         this.id = post.getId();
         this.content = post.getContent();
         this.imgUrl = post.getImgUrl();
@@ -42,5 +45,9 @@ public class PostResponseDto {
                     post.getUser().getNickname(),
                     post.getUser().getProfileImage());
         }
+        
+        // 좋아요 정보 설정
+        this.likeCount = likeRepository.countByPostId(post.getId());
+        this.isLiked = currentUserId != null && likeRepository.existsByUserIdAndPostId(currentUserId, post.getId());
     }
 }

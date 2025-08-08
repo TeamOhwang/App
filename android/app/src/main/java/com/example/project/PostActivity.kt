@@ -50,9 +50,12 @@ class PostActivity : AppCompatActivity() {
 
         // PostDetailAdapter 사용
         postAdapter = PostDetailAdapter(
-            emptyList(),
+            mutableListOf(),
             onCommentClick = { post ->
                 // 댓글 클릭 처리
+            },
+            onLikeClick = { post, position ->
+                // 좋아요 클릭 처리
             }
         )
         recyclerView.adapter = postAdapter
@@ -111,19 +114,24 @@ class PostActivity : AppCompatActivity() {
                 }
                 val profileImgUrl = userObject?.optString("profileImage")
 
+                // 좋아요 정보 파싱
+                val likeCount = jsonObject.optInt("likeCount", 0)
+                val isLiked = jsonObject.optBoolean("isLiked", false)
+
                 // Post 클래스에 맞게 매핑
                 val post = Post(
                     id = id,
                     username = username,
                     profileImageRes = R.drawable.ic_profile_placeholder,
                     imageRes = R.drawable.img_salad, // 기본 이미지 (Glide 로딩 실패시 사용)
-                    likeCount = 0, // 기본값
+                    likeCount = likeCount,
                     description = if (content.length > 50) "${content.substring(0, 50)}..." else content,
                     recipeTitle = "${username}님의 레시피",
                     recipeContent = content,
                     comments = emptyList(), // 기본값
                     imgUrl = if (imgUrl == "null" || imgUrl.isEmpty()) null else imgUrl, // null 처리
-                    profileImgUrl = if (profileImgUrl == "null" || profileImgUrl.isNullOrEmpty()) null else profileImgUrl
+                    profileImgUrl = if (profileImgUrl == "null" || profileImgUrl.isNullOrEmpty()) null else profileImgUrl,
+                    isLiked = isLiked
                 )
 
                 posts.add(post)

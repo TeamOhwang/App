@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.project.util.SessionManager
 import okhttp3.*
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.IOException
@@ -95,6 +96,9 @@ class PostDetailActivity : AppCompatActivity() {
             postsList,
             onCommentClick = { post ->
                 Toast.makeText(this, "댓글 기능은 추후 구현 예정입니다", Toast.LENGTH_SHORT).show()
+            },
+            onLikeClick = { post, position ->
+                handleLikeClick(post, position)
             }
         )
         
@@ -185,18 +189,23 @@ class PostDetailActivity : AppCompatActivity() {
 
         Log.d("PostDetailActivity", "게시물 파싱 - ID: $id, 작성자: $username, 내용: $content")
 
+        // 좋아요 정보 파싱
+        val likeCount = jsonObject.optInt("likeCount", 0)
+        val isLiked = jsonObject.optBoolean("isLiked", false)
+
         return Post(
             id = id,
             username = username,
             profileImageRes = R.drawable.ic_profile_placeholder,
             imageRes = R.drawable.img_salad,
-            likeCount = 0, // TODO: 좋아요 수 API 연동
+            likeCount = likeCount,
             description = content,
             recipeTitle = "${username}님의 레시피",
             recipeContent = content,
             comments = emptyList(), // TODO: 댓글 API 연동
             imgUrl = if (imgUrl == "null" || imgUrl.isEmpty()) null else imgUrl,
-            profileImgUrl = if (profileImgUrl == "null" || profileImgUrl.isNullOrEmpty()) null else profileImgUrl
+            profileImgUrl = if (profileImgUrl == "null" || profileImgUrl.isNullOrEmpty()) null else profileImgUrl,
+            isLiked = isLiked
         )
     }
 
@@ -277,5 +286,52 @@ class PostDetailActivity : AppCompatActivity() {
             val intent = Intent(this, MyPageActivity::class.java)
             startActivity(intent)
         }
+    }
+    
+    // 좋아요 클릭 처리
+    private fun handleLikeClick(post: Post, position: Int) {
+        val url = if (post.isLiked) {
+            "$baseUrl/likes/${post.id}" // DELETE 요청 (좋아요 취소)
+        } else {
+            "$baseUrl/likes/${post.id}" // POST 요청 (좋아요)
+        }
+        
+        val requestBuilder = Request.Builder().url(url)
+        val request = if (post.isLiked) {
+            requestBuilder.delete().build()
+        } else {
+            requestBuilder.post("".toRequestBody()).build()
+        }
+        
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                runOnUiThread {
+                    Log.e("PostDetailActivity", "좋아요 요청 실패", e)
+                    Toast.makeText(this@PostDetailActivity, "좋아요 처리 중 오류가 발생했습니다", Toast.LENGTH_SHORT).show()
+                }
+            }
+            
+            override fun onResponse(call: Call, response: Response) {
+                runOnUiThread {
+                    if (response.isSuccessful) {
+                        // 좋아요 상태 토글
+                        val newIsLiked = !post.isLiked
+                        val newLikeCount = if (newIsLiked) post.likeCount + 1 else post.likeCount - 1
+                        
+                        // 어댑터 업데이트
+                        postDetailAdapter.updateLikeStatus(position, newIsLiked, newLikeCount)
+                        
+                        Log.d("PostDetailActivity", "좋아요 처리 성공: ${if (newIsLiked) "좋아요" else "좋아요 취소"}")
+                    } else {
+                        Log.e("PostDetailActivity", "좋아요 처리 실패: ${response.code}")
+                        if (response.code == 401) {
+                            Toast.makeText(this@PostDetailActivity, "로그인이 필요합니다", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(this@PostDetailActivity, "좋아요 처리에 실패했습니다", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+        })
     }
 }

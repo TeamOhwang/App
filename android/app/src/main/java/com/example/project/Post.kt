@@ -11,5 +11,6 @@ data class Post(
     val recipeContent: String,
     val comments: List<Comment>,
     val imgUrl: String? = null,         // ← nullable (꼭 = null로 디폴트 둘 필요는 없지만 있으면 더 안전)
-    val profileImgUrl: String? = null
+    val profileImgUrl: String? = null,
+    val isLiked: Boolean = false        // 좋아요 상태 추가
 )
